@@ -23,7 +23,7 @@
 # VERIFY NODE + NPM
 #################################################
 
-- name: Verify node installation
+- name: Verify node
   command: node -v
   register: node_ver
   changed_when: false
@@ -31,7 +31,7 @@
 - debug:
     var: node_ver.stdout
 
-- name: Verify npm installation
+- name: Verify npm
   command: npm -v
   register: npm_ver
   changed_when: false
@@ -40,7 +40,7 @@
     var: npm_ver.stdout
 
 #################################################
-# POSTGRESQL INITIAL SETUP
+# POSTGRES INITIAL START
 #################################################
 
 - name: Ensure postgres running
@@ -50,7 +50,19 @@
     enabled: yes
 
 #################################################
-# MOVE POSTGRES DATA TO PERSISTENT VOLUME
+# DETECT POSTGRES VERSION
+#################################################
+
+- name: Detect postgres version
+  shell: ls /var/lib/postgresql
+  register: pg_version
+  changed_when: false
+
+- set_fact:
+    pg_ver: "{{ pg_version.stdout }}"
+
+#################################################
+# MOVE POSTGRES DATA TO TERRAFORM VOLUME
 #################################################
 
 - name: Stop postgres before migration
@@ -66,24 +78,44 @@
     group: postgres
     mode: "0700"
 
-- name: Sync postgres data if not migrated
-  shell: rsync -a /var/lib/postgresql/ /var/lib/umami/postgres/
+- name: Migrate postgres data if not already migrated
+  shell: rsync -a /var/lib/postgresql/{{ pg_ver }}/ /var/lib/umami/postgres/
   args:
-    creates: /var/lib/umami/postgres/base
+    creates: "/var/lib/umami/postgres/main"
+
+#################################################
+# FIX PERMISSIONS
+#################################################
+
+- name: Fix postgres ownership
+  file:
+    path: /var/lib/umami/postgres
+    owner: postgres
+    group: postgres
+    recurse: yes
+
+#################################################
+# UPDATE POSTGRES DATA DIRECTORY
+#################################################
 
 - name: Update postgres data_directory
-  shell: |
-    sed -i "s|^data_directory.*|data_directory = '/var/lib/umami/postgres/main'|" \
-    /etc/postgresql/*/main/postgresql.conf
+  lineinfile:
+    path: "/etc/postgresql/{{ pg_ver }}/main/postgresql.conf"
+    regexp: "^data_directory"
+    line: "data_directory = '/var/lib/umami/postgres/main'"
 
-- name: Start postgres after migration
+#################################################
+# START POSTGRES AFTER MIGRATION
+#################################################
+
+- name: Start postgres
   service:
     name: postgresql
     state: started
     enabled: yes
 
 #################################################
-# WAIT FOR POSTGRES SOCKET BEFORE PROCEEDING
+# WAIT FOR POSTGRES SOCKET
 #################################################
 
 - name: Wait for postgres socket
@@ -92,7 +124,7 @@
     timeout: 60
 
 #################################################
-# DATABASE CONFIG
+# DATABASE SETUP
 #################################################
 
 - name: Create umami database
@@ -100,14 +132,14 @@
   postgresql_db:
     name: umami
 
-- name: Create DB user
+- name: Create umami DB user
   become_user: postgres
   postgresql_user:
     name: umami
     password: "{{ umami_db_password }}"
     role_attr_flags: LOGIN
 
-- name: Grant privileges
+- name: Grant DB privileges
   become_user: postgres
   postgresql_privs:
     db: umami
@@ -116,10 +148,10 @@
     privs: ALL
 
 #################################################
-# CLONE UMAMI
+# INSTALL UMAMI
 #################################################
 
-- name: Clone Umami repo
+- name: Clone Umami repository
   git:
     repo: https://github.com/umami-software/umami.git
     dest: /opt/umami
@@ -127,7 +159,7 @@
     update: yes
 
 #################################################
-# ENV CONFIGURATION
+# ENV CONFIG
 #################################################
 
 - name: Create Umami env file
@@ -162,7 +194,7 @@
 # SYSTEMD SERVICE
 #################################################
 
-- name: Create Umami service
+- name: Create Umami systemd service
   copy:
     dest: /etc/systemd/system/umami.service
     content: |
