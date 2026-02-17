@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
 
       #################################################
-      # TERRAFORM SETUP
+      # SETUP TERRAFORM
       #################################################
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -39,7 +39,7 @@ jobs:
           TF_VAR_pm_api_token_id: ${{ secrets.PM_API_TOKEN_ID }}
           TF_VAR_pm_api_token_secret: ${{ secrets.PM_API_TOKEN_SECRET }}
           TF_VAR_ct_password: ${{ secrets.CT_PASSWORD }}
-          TF_VAR_ssh_public_key_path: /root/.ssh/proxmox_ansible_key.pub
+          TF_VAR_ssh_public_key: ${{ secrets.ANSIBLE_SSH_PUBLIC_KEY }}
         run: terraform plan
 
       #################################################
@@ -51,5 +51,5 @@ jobs:
           TF_VAR_pm_api_token_id: ${{ secrets.PM_API_TOKEN_ID }}
           TF_VAR_pm_api_token_secret: ${{ secrets.PM_API_TOKEN_SECRET }}
           TF_VAR_ct_password: ${{ secrets.CT_PASSWORD }}
-          TF_VAR_ssh_public_key_path: /root/.ssh/proxmox_ansible_key.pub
+          TF_VAR_ssh_public_key: ${{ secrets.ANSIBLE_SSH_PUBLIC_KEY }}
         run: terraform apply -auto-approve

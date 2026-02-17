@@ -1,10 +1,9 @@
 #################################################
-# SSH KEY (AUTO FROM RUNNER PATH VARIABLE)
+# LOCALS
 #################################################
 
 locals {
-  ssh_public_key = file(var.ssh_public_key_path)
-  ansible_user   = "root"
+  ansible_user = "root"
 }
 
 #################################################
@@ -22,7 +21,7 @@ resource "proxmox_lxc" "nginx" {
   cores  = 1
   memory = 1024
 
-  ssh_public_keys = local.ssh_public_key
+  ssh_public_keys = var.ssh_public_key
 
   network {
     name   = "eth0"
@@ -41,7 +40,6 @@ resource "proxmox_lxc" "nginx" {
     storage = var.storage
     volume  = "resume-assets"
     mp      = "/var/www/html/assets"
-   
   }
 
   features {
@@ -66,7 +64,7 @@ resource "proxmox_lxc" "cloudflared" {
   cores  = 1
   memory = 256
 
-  ssh_public_keys = local.ssh_public_key
+  ssh_public_keys = var.ssh_public_key
 
   network {
     name   = "eth0"
@@ -87,7 +85,7 @@ resource "proxmox_lxc" "cloudflared" {
 }
 
 #################################################
-# UMAMI ANALYTICS CONTAINER
+# UMAMI CONTAINER
 #################################################
 
 resource "proxmox_lxc" "umami" {
@@ -101,7 +99,7 @@ resource "proxmox_lxc" "umami" {
   cores  = 2
   memory = 2048
 
-  ssh_public_keys = local.ssh_public_key
+  ssh_public_keys = var.ssh_public_key
 
   network {
     name   = "eth0"

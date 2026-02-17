@@ -54,11 +54,10 @@ variable "pm_api_token_secret" {
 }
 
 #################################################
-# SSH KEY AUTO-INJECTION (RUNNER CONTROL PLANE)
+# SSH KEY FOR ANSIBLE ACCESS
 #################################################
 
-variable "ssh_public_key_path" {
-  description = "Path to runner SSH public key used for Ansible access"
+variable "ssh_public_key" {
+  description = "Public SSH key injected into LXC containers for Ansible access"
   type        = string
-  default     = "/root/.ssh/proxmox_ansible_key.pub"
 }
