@@ -1,40 +1,44 @@
 #################################################
-# ANSIBLE AUTO-INVENTORY OUTPUTS
+# AUTO GENERATED ANSIBLE INVENTORY
 #################################################
 
-output "ansible_inventory" {
-  depends_on = [
-    null_resource.wait_for_nginx,
-    null_resource.wait_for_cloudflared,
-    null_resource.wait_for_umami
-  ]
+output "ansible_inventory_yaml" {
 
-  value = {
-    nginx = {
-      hosts = {
-        nginx-web = {
-          ansible_host = proxmox_lxc.nginx.network[0].ip
-          ansible_user = local.ansible_user
+  value = yamlencode({
+
+    all = {
+      children = {
+
+        nginx = {
+          hosts = {
+            nginx-web = {
+              ansible_host = var.nginx_ip
+              ansible_user = "root"
+            }
+          }
         }
-      }
-    }
 
-    cloudflared = {
-      hosts = {
         cloudflared = {
-          ansible_host = proxmox_lxc.cloudflared.network[0].ip
-          ansible_user = local.ansible_user
+          hosts = {
+            cloudflared = {
+              ansible_host = var.cloudflared_ip
+              ansible_user = "root"
+            }
+          }
         }
+
+        umami = {
+          hosts = {
+            umami-analytics = {
+              ansible_host = var.umami_ip
+              ansible_user = "root"
+            }
+          }
+        }
+
       }
     }
 
-    umami = {
-      hosts = {
-        umami-analytics = {
-          ansible_host = proxmox_lxc.umami.network[0].ip
-          ansible_user = local.ansible_user
-        }
-      }
-    }
-  }
+  })
 }
+

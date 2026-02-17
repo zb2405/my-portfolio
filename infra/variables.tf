@@ -23,11 +23,37 @@ variable "template" {
 }
 
 #################################################
+# NETWORK SETTINGS
+#################################################
+
+variable "gateway" {
+  description = "Default gateway"
+  type        = string
+}
+
+variable "dns_server" {
+  description = "DNS server for containers"
+  type        = string
+}
+
+variable "nginx_ip" {
+  type = string
+}
+
+variable "cloudflared_ip" {
+  type = string
+}
+
+variable "umami_ip" {
+  type = string
+}
+
+#################################################
 # CONTAINER ACCESS
 #################################################
 
 variable "ct_password" {
-  description = "Initial container root password (console only)"
+  description = "Initial container root password"
   type        = string
   sensitive   = true
 }
@@ -37,27 +63,24 @@ variable "ct_password" {
 #################################################
 
 variable "pm_api_url" {
-  description = "Proxmox API endpoint"
-  type        = string
+  type = string
 }
 
 variable "pm_api_token_id" {
-  description = "Proxmox API Token ID"
-  type        = string
-  sensitive   = true
+  type      = string
+  sensitive = true
 }
 
 variable "pm_api_token_secret" {
-  description = "Proxmox API Token Secret"
-  type        = string
-  sensitive   = true
+  type      = string
+  sensitive = true
 }
 
 #################################################
-# SSH KEY FOR ANSIBLE ACCESS
+# SSH PUBLIC KEY (PASSED FROM RUNNER)
 #################################################
 
 variable "ssh_public_key" {
-  description = "Public SSH key injected into LXC containers for Ansible access"
+  description = "Runner public key used by Ansible"
   type        = string
 }
