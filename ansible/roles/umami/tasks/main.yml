@@ -80,6 +80,16 @@
   service:
     name: postgresql
     state: started
+    enabled: yes
+
+#################################################
+# WAIT FOR POSTGRES SOCKET BEFORE PROCEEDING
+#################################################
+
+- name: Wait for postgres socket
+  wait_for:
+    path: /var/run/postgresql/.s.PGSQL.5432
+    timeout: 60
 
 #################################################
 # DATABASE CONFIG
