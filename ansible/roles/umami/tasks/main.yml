@@ -1,0 +1,23 @@
+- name: Install dependencies
+  apt:
+    name:
+      - nodejs
+      - npm
+      - git
+    state: present
+    update_cache: yes
+
+- name: Clone umami repo
+  git:
+    repo: https://github.com/umami-software/umami.git
+    dest: /opt/umami
+
+- name: Install umami deps
+  command: npm install
+  args:
+    chdir: /opt/umami
+
+- name: Build umami
+  command: npm run build
+  args:
+    chdir: /opt/umami
