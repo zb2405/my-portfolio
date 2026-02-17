@@ -1,12 +1,13 @@
 ---
 #################################################
-# INSTALL CLOUDFLARED
+# INSTALL CLOUDFLARED PACKAGE
 #################################################
 
 - name: Download cloudflared package
   get_url:
     url: https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
     dest: /tmp/cloudflared.deb
+    mode: "0644"
 
 - name: Install cloudflared
   apt:
@@ -15,6 +16,10 @@
 #################################################
 # INSTALL TUNNEL SERVICE (TOKEN MODE)
 #################################################
+
+# Token-based install automatically creates:
+# /etc/cloudflared/config.yml
+# systemd service
 
 - name: Install cloudflared tunnel service
   command: cloudflared service install {{ cloudflared_tunnel_token }}
@@ -25,19 +30,37 @@
 # ENABLE + START SERVICE
 #################################################
 
-- name: Restart cloudflared
+- name: Reload systemd daemon
+  command: systemctl daemon-reexec
+
+- name: Enable and start cloudflared
   systemd:
     name: cloudflared
     enabled: yes
-    state: restarted
+    state: started
 
 #################################################
-# VERIFY TUNNEL STATUS
+# VERIFY TUNNEL IS ACTIVE (TOKEN MODE SAFE)
 #################################################
 
-- name: Verify tunnel registration
-  shell: cloudflared tunnel list
-  register: tunnel_status
+- name: Check cloudflared service state
+  command: systemctl is-active cloudflared
+  register: cloudflared_status
+  changed_when: false
+
+- name: Fail if tunnel is not running
+  fail:
+    msg: "Cloudflared tunnel is NOT active"
+  when: cloudflared_status.stdout != "active"
+
+#################################################
+# OPTIONAL: SHOW VERSION (DEBUG FRIENDLY)
+#################################################
+
+- name: Show cloudflared version
+  command: cloudflared --version
+  register: cf_version
+  changed_when: false
 
 - debug:
-    var: tunnel_status.stdout
+    var: cf_version.stdout
