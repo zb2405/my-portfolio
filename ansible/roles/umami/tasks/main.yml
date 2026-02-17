@@ -3,17 +3,14 @@
 # SYSTEM DEPENDENCIES
 #################################################
 
-- name: Install NodeJS 22
-  shell: |
-    curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
-    apt-get install -y nodejs
-  args:
-    executable: /bin/bash
-
-- name: Install required packages
+- name: Install base packages
   apt:
     name:
+      - curl
+      - ca-certificates
+      - gnupg
       - git
+      - rsync
       - postgresql
       - postgresql-contrib
       - python3-psycopg2
@@ -21,10 +18,38 @@
     update_cache: yes
 
 #################################################
+# NODEJS 22 (PROPER INSTALL)
+#################################################
+
+- name: Add NodeSource GPG key
+  shell: |
+    mkdir -p /etc/apt/keyrings
+    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
+      | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+  args:
+    creates: /etc/apt/keyrings/nodesource.gpg
+
+- name: Add NodeJS repo
+  copy:
+    dest: /etc/apt/sources.list.d/nodesource.list
+    content: |
+      deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main
+
+- name: Install NodeJS 22
+  apt:
+    name: nodejs
+    state: present
+    update_cache: yes
+
+- name: Verify Node + npm
+  command: node -v
+  changed_when: false
+
+#################################################
 # POSTGRESQL SETUP
 #################################################
 
-- name: Ensure postgres is running
+- name: Ensure postgres running
   service:
     name: postgresql
     state: started
@@ -35,14 +60,14 @@
   postgresql_db:
     name: umami
 
-- name: Create umami DB user
+- name: Create DB user
   become_user: postgres
   postgresql_user:
     name: umami
     password: "{{ umami_db_password }}"
     role_attr_flags: LOGIN
 
-- name: Grant DB privileges
+- name: Grant privileges
   become_user: postgres
   postgresql_privs:
     db: umami
@@ -51,10 +76,10 @@
     privs: ALL
 
 #################################################
-# CLONE / UPDATE UMAMI
+# CLONE UMAMI
 #################################################
 
-- name: Clone Umami repository
+- name: Clone Umami repo
   git:
     repo: https://github.com/umami-software/umami.git
     dest: /opt/umami
@@ -62,10 +87,10 @@
     update: yes
 
 #################################################
-# ENV CONFIGURATION
+# ENV CONFIG
 #################################################
 
-- name: Create Umami .env file
+- name: Create Umami env
   copy:
     dest: /opt/umami/.env
     content: |
@@ -86,7 +111,7 @@
   args:
     chdir: /opt/umami
 
-- name: Run database migrations
+- name: Run DB migrations
   command: npm run db:migrate
   args:
     chdir: /opt/umami
@@ -95,7 +120,7 @@
 # SYSTEMD SERVICE
 #################################################
 
-- name: Create systemd service
+- name: Create umami service
   copy:
     dest: /etc/systemd/system/umami.service
     content: |
@@ -105,9 +130,8 @@
 
       [Service]
       Type=simple
-      User=root
       WorkingDirectory=/opt/umami
-      ExecStart=/usr/bin/env npm start
+      ExecStart=/usr/bin/npm start
       Restart=always
       Environment=NODE_ENV=production
 
@@ -124,7 +148,7 @@
     state: restarted
 
 #################################################
-# MOVE POSTGRES DATA TO PERSISTENT VOLUME
+# MOVE POSTGRES TO PERSISTENT VOLUME
 #################################################
 
 - name: Stop postgres
@@ -132,7 +156,7 @@
     name: postgresql
     state: stopped
 
-- name: Create persistent postgres directory
+- name: Ensure persistent directory
   file:
     path: /var/lib/umami/postgres
     state: directory
@@ -140,16 +164,15 @@
     group: postgres
     mode: "0700"
 
-- name: Sync existing postgres data
+- name: Sync postgres data
   shell: rsync -a /var/lib/postgresql/ /var/lib/umami/postgres/
   args:
     creates: /var/lib/umami/postgres/base
 
 - name: Update postgres data_directory
-  lineinfile:
-    path: /etc/postgresql/*/main/postgresql.conf
-    regexp: "^data_directory"
-    line: "data_directory = '/var/lib/umami/postgres/main'"
+  shell: |
+    sed -i "s|^data_directory.*|data_directory = '/var/lib/umami/postgres/main'|" \
+    /etc/postgresql/*/main/postgresql.conf
 
 - name: Start postgres
   service:
