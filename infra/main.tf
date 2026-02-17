@@ -126,3 +126,49 @@ resource "proxmox_lxc" "umami" {
 
   onboot = true
 }
+
+#################################################
+# ANSIBLE READINESS CHECKS (STATIC IPS)
+#################################################
+
+resource "null_resource" "wait_for_nginx" {
+  depends_on = [proxmox_lxc.nginx]
+
+  provisioner "local-exec" {
+    command = <<EOT
+for i in {1..60}; do
+  ssh -o StrictHostKeyChecking=no ${local.ansible_user}@${var.nginx_ip} "echo ready" && exit 0
+  sleep 5
+done
+exit 1
+EOT
+  }
+}
+
+resource "null_resource" "wait_for_cloudflared" {
+  depends_on = [proxmox_lxc.cloudflared]
+
+  provisioner "local-exec" {
+    command = <<EOT
+for i in {1..60}; do
+  ssh -o StrictHostKeyChecking=no ${local.ansible_user}@${var.cloudflared_ip} "echo ready" && exit 0
+  sleep 5
+done
+exit 1
+EOT
+  }
+}
+
+resource "null_resource" "wait_for_umami" {
+  depends_on = [proxmox_lxc.umami]
+
+  provisioner "local-exec" {
+    command = <<EOT
+for i in {1..60}; do
+  ssh -o StrictHostKeyChecking=no ${local.ansible_user}@${var.umami_ip} "echo ready" && exit 0
+  sleep 5
+done
+exit 1
+EOT
+  }
+}
