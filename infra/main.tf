@@ -130,16 +130,20 @@ resource "proxmox_lxc" "umami" {
 #################################################
 # ANSIBLE READINESS CHECKS (STATIC IPS)
 #################################################
-
 resource "null_resource" "wait_for_nginx" {
   depends_on = [proxmox_lxc.nginx]
 
   provisioner "local-exec" {
     command = <<EOT
+echo "Waiting for nginx-web to boot..."
+sleep 40
+
 for i in {1..60}; do
-  ssh -o StrictHostKeyChecking=no ${local.ansible_user}@${var.nginx_ip} "echo ready" && exit 0
+  nc -z ${var.nginx_ip} 22 && exit 0
   sleep 5
 done
+
+echo "SSH not reachable on nginx-web"
 exit 1
 EOT
   }
@@ -150,10 +154,15 @@ resource "null_resource" "wait_for_cloudflared" {
 
   provisioner "local-exec" {
     command = <<EOT
+echo "Waiting for cloudflared to boot..."
+sleep 40
+
 for i in {1..60}; do
-  ssh -o StrictHostKeyChecking=no ${local.ansible_user}@${var.cloudflared_ip} "echo ready" && exit 0
+  nc -z ${var.cloudflared_ip} 22 && exit 0
   sleep 5
 done
+
+echo "SSH not reachable on cloudflared"
 exit 1
 EOT
   }
@@ -164,10 +173,15 @@ resource "null_resource" "wait_for_umami" {
 
   provisioner "local-exec" {
     command = <<EOT
+echo "Waiting for umami to boot..."
+sleep 40
+
 for i in {1..60}; do
-  ssh -o StrictHostKeyChecking=no ${local.ansible_user}@${var.umami_ip} "echo ready" && exit 0
+  nc -z ${var.umami_ip} 22 && exit 0
   sleep 5
 done
+
+echo "SSH not reachable on umami"
 exit 1
 EOT
   }
