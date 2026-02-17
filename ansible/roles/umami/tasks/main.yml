@@ -11,6 +11,8 @@
       - gnupg
       - git
       - rsync
+      - nodejs
+      - npm
       - postgresql
       - postgresql-contrib
       - python3-psycopg2
@@ -18,20 +20,13 @@
     update_cache: yes
 
 #################################################
-# NODEJS INSTALL
+# VERIFY NODE + NPM
 #################################################
-
-- name: Install NodeJS + npm from Ubuntu repo
-  apt:
-    name:
-      - nodejs
-      - npm
-    state: present
-    update_cache: yes
 
 - name: Verify node installation
   command: node -v
   register: node_ver
+  changed_when: false
 
 - debug:
     var: node_ver.stdout
@@ -39,13 +34,13 @@
 - name: Verify npm installation
   command: npm -v
   register: npm_ver
+  changed_when: false
 
 - debug:
     var: npm_ver.stdout
 
-
 #################################################
-# POSTGRESQL SETUP
+# POSTGRESQL INITIAL SETUP
 #################################################
 
 - name: Ensure postgres running
@@ -53,6 +48,42 @@
     name: postgresql
     state: started
     enabled: yes
+
+#################################################
+# MOVE POSTGRES DATA TO PERSISTENT VOLUME
+#################################################
+
+- name: Stop postgres before migration
+  service:
+    name: postgresql
+    state: stopped
+
+- name: Ensure persistent postgres directory exists
+  file:
+    path: /var/lib/umami/postgres
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: "0700"
+
+- name: Sync postgres data if not migrated
+  shell: rsync -a /var/lib/postgresql/ /var/lib/umami/postgres/
+  args:
+    creates: /var/lib/umami/postgres/base
+
+- name: Update postgres data_directory
+  shell: |
+    sed -i "s|^data_directory.*|data_directory = '/var/lib/umami/postgres/main'|" \
+    /etc/postgresql/*/main/postgresql.conf
+
+- name: Start postgres after migration
+  service:
+    name: postgresql
+    state: started
+
+#################################################
+# DATABASE CONFIG
+#################################################
 
 - name: Create umami database
   become_user: postgres
@@ -86,15 +117,17 @@
     update: yes
 
 #################################################
-# ENV CONFIG
+# ENV CONFIGURATION
 #################################################
 
-- name: Create Umami env
+- name: Create Umami env file
   copy:
     dest: /opt/umami/.env
     content: |
       DATABASE_URL=postgresql://umami:{{ umami_db_password }}@localhost:5432/umami
       APP_SECRET={{ umami_app_secret }}
+      HOSTNAME=127.0.0.1
+      PORT=3000
 
 #################################################
 # INSTALL + BUILD
@@ -119,7 +152,7 @@
 # SYSTEMD SERVICE
 #################################################
 
-- name: Create umami service
+- name: Create Umami service
   copy:
     dest: /etc/systemd/system/umami.service
     content: |
@@ -130,7 +163,7 @@
       [Service]
       Type=simple
       WorkingDirectory=/opt/umami
-      ExecStart=/usr/bin/npm start
+      ExecStart=/usr/bin/env npm start
       Restart=always
       Environment=NODE_ENV=production
 
@@ -145,35 +178,3 @@
     name: umami
     enabled: yes
     state: restarted
-
-#################################################
-# MOVE POSTGRES TO PERSISTENT VOLUME
-#################################################
-
-- name: Stop postgres
-  service:
-    name: postgresql
-    state: stopped
-
-- name: Ensure persistent directory
-  file:
-    path: /var/lib/umami/postgres
-    state: directory
-    owner: postgres
-    group: postgres
-    mode: "0700"
-
-- name: Sync postgres data
-  shell: rsync -a /var/lib/postgresql/ /var/lib/umami/postgres/
-  args:
-    creates: /var/lib/umami/postgres/base
-
-- name: Update postgres data_directory
-  shell: |
-    sed -i "s|^data_directory.*|data_directory = '/var/lib/umami/postgres/main'|" \
-    /etc/postgresql/*/main/postgresql.conf
-
-- name: Start postgres
-  service:
-    name: postgresql
-    state: started
