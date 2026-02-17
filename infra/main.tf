@@ -41,7 +41,7 @@ resource "proxmox_lxc" "nginx" {
     storage = var.storage
     volume  = "resume-assets"
     mp      = "/var/www/html/assets"
-    ro      = true
+   
   }
 
   features {
