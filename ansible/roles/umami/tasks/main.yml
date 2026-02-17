@@ -1,23 +1,98 @@
-- name: Install dependencies
+---
+#################################################
+# INSTALL SYSTEM DEPENDENCIES
+#################################################
+- name: Install required packages
   apt:
     name:
       - nodejs
       - npm
       - git
+      - postgresql
+      - postgresql-contrib
     state: present
     update_cache: yes
 
-- name: Clone umami repo
+#################################################
+# POSTGRESQL SETUP
+#################################################
+- name: Ensure postgres is running
+  service:
+    name: postgresql
+    state: started
+    enabled: yes
+
+- name: Create umami database
+  become_user: postgres
+  postgresql_db:
+    name: umami
+
+- name: Create umami DB user
+  become_user: postgres
+  postgresql_user:
+    name: umami
+    password: "{{ umami_db_password }}"
+    priv: "umami:ALL"
+
+#################################################
+# CLONE / UPDATE UMAMI
+#################################################
+- name: Clone Umami repository
   git:
     repo: https://github.com/umami-software/umami.git
     dest: /opt/umami
+    version: master
+    update: yes
 
-- name: Install umami deps
-  command: npm install
+#################################################
+# ENV CONFIG
+#################################################
+- name: Create Umami .env file
+  copy:
+    dest: /opt/umami/.env
+    content: |
+      DATABASE_URL=postgresql://umami:{{ umami_db_password }}@localhost:5432/umami
+      APP_SECRET={{ umami_app_secret }}
+
+#################################################
+# INSTALL + BUILD
+#################################################
+- name: Install dependencies
+  command: npm ci
   args:
     chdir: /opt/umami
 
-- name: Build umami
+- name: Build Umami
   command: npm run build
   args:
     chdir: /opt/umami
+
+#################################################
+# SYSTEMD SERVICE
+#################################################
+- name: Create systemd service
+  copy:
+    dest: /etc/systemd/system/umami.service
+    content: |
+      [Unit]
+      Description=Umami Analytics
+      After=network.target
+
+      [Service]
+      Type=simple
+      WorkingDirectory=/opt/umami
+      ExecStart=/usr/bin/npm start
+      Restart=always
+      Environment=NODE_ENV=production
+
+      [Install]
+      WantedBy=multi-user.target
+
+- name: Reload systemd
+  command: systemctl daemon-reexec
+
+- name: Enable and start Umami
+  service:
+    name: umami
+    enabled: yes
+    state: restarted

@@ -37,4 +37,6 @@ jobs:
       - name: Run Ansible Playbook
         run: |
           ansible-playbook -i ansible/inventory/generated.yml ansible/deploy.yml \
-          --extra-vars "cloudflared_tunnel_token=${{ secrets.CLOUDFLARED_TUNNEL_TOKEN }}"
+          --extra-vars "cloudflared_tunnel_token=${{ secrets.CLOUDFLARED_TUNNEL_TOKEN }}" \
+          --extra-vars "umami_db_password=${{ secrets.UMAMI_DB_PASSWORD }}" \
+          --extra-vars "umami_app_secret=${{ secrets.UMAMI_APP_SECRET }}"
