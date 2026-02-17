@@ -40,6 +40,23 @@
     var: npm_ver.stdout
 
 #################################################
+# INSTALL PNPM
+#################################################
+
+- name: Install pnpm globally
+  command: npm install -g pnpm
+  args:
+    creates: /usr/local/bin/pnpm
+
+- name: Verify pnpm version
+  command: pnpm -v
+  register: pnpm_ver
+  changed_when: false
+
+- debug:
+    var: pnpm_ver.stdout
+
+#################################################
 # POSTGRES INITIAL START
 #################################################
 
@@ -172,20 +189,26 @@
       PORT=3000
 
 #################################################
-# INSTALL + BUILD
+# INSTALL + BUILD USING PNPM
 #################################################
-- name: Install dependencies
-  command: npm install --legacy-peer-deps
+
+- name: Install dependencies with pnpm
+  command: pnpm install --no-frozen-lockfile
   args:
     chdir: /opt/umami
 
-- name: Build Umami
-  command: npm run build
+- name: Generate Prisma client
+  command: pnpm prisma generate
   args:
     chdir: /opt/umami
 
 - name: Run DB migrations
-  command: npm run db:migrate
+  command: pnpm prisma migrate deploy
+  args:
+    chdir: /opt/umami
+
+- name: Build Umami
+  command: pnpm build
   args:
     chdir: /opt/umami
 
