@@ -174,9 +174,6 @@
 #################################################
 # INSTALL + BUILD
 #################################################
-- name: Allow npm scripts in LXC
-  command: npm config set unsafe-perm true
-
 - name: Install dependencies
   command: npm install
   args:
