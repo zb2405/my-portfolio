@@ -122,3 +122,36 @@
     name: umami
     enabled: yes
     state: restarted
+
+#################################################
+# MOVE POSTGRES DATA TO PERSISTENT VOLUME
+#################################################
+
+- name: Stop postgres
+  service:
+    name: postgresql
+    state: stopped
+
+- name: Create persistent postgres directory
+  file:
+    path: /var/lib/umami/postgres
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: "0700"
+
+- name: Sync existing postgres data
+  shell: rsync -a /var/lib/postgresql/ /var/lib/umami/postgres/
+  args:
+    creates: /var/lib/umami/postgres/base
+
+- name: Update postgres data_directory
+  lineinfile:
+    path: /etc/postgresql/*/main/postgresql.conf
+    regexp: "^data_directory"
+    line: "data_directory = '/var/lib/umami/postgres/main'"
+
+- name: Start postgres
+  service:
+    name: postgresql
+    state: started
