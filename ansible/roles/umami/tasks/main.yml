@@ -175,7 +175,7 @@
 # INSTALL + BUILD
 #################################################
 - name: Install dependencies
-  command: npm install
+  command: npm install --legacy-peer-deps
   args:
     chdir: /opt/umami
 
