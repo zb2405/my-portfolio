@@ -1,21 +1,29 @@
 ---
 #################################################
-# INSTALL SYSTEM DEPENDENCIES
+# SYSTEM DEPENDENCIES
 #################################################
+
+- name: Install NodeJS 22
+  shell: |
+    curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+    apt-get install -y nodejs
+  args:
+    executable: /bin/bash
+
 - name: Install required packages
   apt:
     name:
-      - nodejs
-      - npm
       - git
       - postgresql
       - postgresql-contrib
+      - python3-psycopg2
     state: present
     update_cache: yes
 
 #################################################
 # POSTGRESQL SETUP
 #################################################
+
 - name: Ensure postgres is running
   service:
     name: postgresql
@@ -32,11 +40,20 @@
   postgresql_user:
     name: umami
     password: "{{ umami_db_password }}"
-    priv: "umami:ALL"
+    role_attr_flags: LOGIN
+
+- name: Grant DB privileges
+  become_user: postgres
+  postgresql_privs:
+    db: umami
+    roles: umami
+    type: database
+    privs: ALL
 
 #################################################
 # CLONE / UPDATE UMAMI
 #################################################
+
 - name: Clone Umami repository
   git:
     repo: https://github.com/umami-software/umami.git
@@ -45,8 +62,9 @@
     update: yes
 
 #################################################
-# ENV CONFIG
+# ENV CONFIGURATION
 #################################################
+
 - name: Create Umami .env file
   copy:
     dest: /opt/umami/.env
@@ -57,6 +75,7 @@
 #################################################
 # INSTALL + BUILD
 #################################################
+
 - name: Install dependencies
   command: npm ci
   args:
@@ -67,21 +86,28 @@
   args:
     chdir: /opt/umami
 
+- name: Run database migrations
+  command: npm run db:migrate
+  args:
+    chdir: /opt/umami
+
 #################################################
 # SYSTEMD SERVICE
 #################################################
+
 - name: Create systemd service
   copy:
     dest: /etc/systemd/system/umami.service
     content: |
       [Unit]
       Description=Umami Analytics
-      After=network.target
+      After=network.target postgresql.service
 
       [Service]
       Type=simple
+      User=root
       WorkingDirectory=/opt/umami
-      ExecStart=/usr/bin/npm start
+      ExecStart=/usr/bin/env npm start
       Restart=always
       Environment=NODE_ENV=production
 
