@@ -18,38 +18,31 @@
     update_cache: yes
 
 #################################################
-# NODEJS 22 INSTALL (PROPER METHOD)
+# NODEJS INSTALL
 #################################################
 
-- name: Add NodeSource GPG key
-  apt_key:
-    url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
-    state: present
-
-- name: Add NodeSource repo
-  apt_repository:
-    repo: "deb https://deb.nodesource.com/node_22.x {{ ansible_distribution_release }} main"
-    state: present
-
-- name: Install NodeJS (includes npm)
+- name: Install NodeJS + npm from Ubuntu repo
   apt:
-    name: nodejs
+    name:
+      - nodejs
+      - npm
     state: present
     update_cache: yes
 
-- name: Verify node
+- name: Verify node installation
   command: node -v
   register: node_ver
 
 - debug:
     var: node_ver.stdout
 
-- name: Verify npm
+- name: Verify npm installation
   command: npm -v
   register: npm_ver
 
 - debug:
     var: npm_ver.stdout
+
 
 #################################################
 # POSTGRESQL SETUP
