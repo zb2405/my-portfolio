@@ -1,36 +1,10 @@
 #################################################
-# SSH KEY (AUTO-READ FROM RUNNER)
+# SSH KEY (AUTO FROM RUNNER PATH VARIABLE)
 #################################################
 
 locals {
-  ssh_public_key = file("/root/.ssh/proxmox_ansible_key.pub")
+  ssh_public_key = file(var.ssh_public_key_path)
   ansible_user   = "root"
-}
-
-#################################################
-# Persistent Volumes (Protected)
-#################################################
-
-resource "proxmox_lxc_mountpoint" "umami_volume" {
-  target_node = var.node
-  storage     = var.storage
-  volume      = "umami-data"
-  size        = "10G"
-
-  lifecycle {
-    prevent_destroy = true
-  }
-}
-
-resource "proxmox_lxc_mountpoint" "resume_volume" {
-  target_node = var.node
-  storage     = var.storage
-  volume      = "resume-assets"
-  size        = "1G"
-
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 #################################################
@@ -65,7 +39,7 @@ resource "proxmox_lxc" "nginx" {
     key     = 0
     slot    = 0
     storage = var.storage
-    volume  = proxmox_lxc_mountpoint.resume_volume.volume
+    volume  = "resume-assets"
     mp      = "/var/www/html/assets"
     ro      = true
   }
@@ -144,7 +118,7 @@ resource "proxmox_lxc" "umami" {
     key     = 0
     slot    = 0
     storage = var.storage
-    volume  = proxmox_lxc_mountpoint.umami_volume.volume
+    volume  = "umami-data"
     mp      = "/var/lib/umami"
   }
 
@@ -164,12 +138,10 @@ resource "null_resource" "wait_for_nginx" {
 
   provisioner "local-exec" {
     command = <<EOT
-echo "Waiting for nginx-web SSH..."
 for i in {1..60}; do
   ssh -o StrictHostKeyChecking=no ${local.ansible_user}@${proxmox_lxc.nginx.network[0].ip} "echo ready" && exit 0
   sleep 5
 done
-echo "ERROR: nginx-web not reachable"
 exit 1
 EOT
   }
@@ -180,12 +152,10 @@ resource "null_resource" "wait_for_cloudflared" {
 
   provisioner "local-exec" {
     command = <<EOT
-echo "Waiting for cloudflared SSH..."
 for i in {1..60}; do
   ssh -o StrictHostKeyChecking=no ${local.ansible_user}@${proxmox_lxc.cloudflared.network[0].ip} "echo ready" && exit 0
   sleep 5
 done
-echo "ERROR: cloudflared not reachable"
 exit 1
 EOT
   }
@@ -196,12 +166,10 @@ resource "null_resource" "wait_for_umami" {
 
   provisioner "local-exec" {
     command = <<EOT
-echo "Waiting for umami SSH..."
 for i in {1..60}; do
   ssh -o StrictHostKeyChecking=no ${local.ansible_user}@${proxmox_lxc.umami.network[0].ip} "echo ready" && exit 0
   sleep 5
 done
-echo "ERROR: umami not reachable"
 exit 1
 EOT
   }
