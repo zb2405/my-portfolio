@@ -80,7 +80,7 @@ jobs:
           mkdir -p infra/ansible/inventory
           terraform output -raw ansible_inventory_yaml > infra/ansible/inventory/generated.yml
       - name: Show inventory (debug)
-        run: cat ansible/inventory/generated.yml
+        run: cat infra/ansible/inventory/generated.yml
 
       - name: Upload inventory artifact
         uses: actions/upload-artifact@v6.0.0
