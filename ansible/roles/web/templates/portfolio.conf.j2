@@ -77,7 +77,6 @@ server {
     #################################################
 
     location / {
-        limit_except GET HEAD { deny all; }
         try_files $uri $uri/ /index.html;
     }
 
