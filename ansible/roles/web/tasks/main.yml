@@ -3,7 +3,14 @@
     name: nginx
     state: present
     update_cache: yes
-
+- name: Create nginx cache directory
+  file:
+    path: /var/cache/nginx/umami
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: "0755"
+    
 - name: Ensure nginx conf.d exists
   file:
     path: /etc/nginx/conf.d
