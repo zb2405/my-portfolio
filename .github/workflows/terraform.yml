@@ -85,7 +85,7 @@ jobs:
           /^[[:space:]]*EOT/ {flag=0}
           flag
           ' plan_output.txt \
-          | sed 's/^ *//' \
+          | sed 's/"//g' \
           > ansible/inventory/generated.yml
 
       - name: Show inventory (debug)
