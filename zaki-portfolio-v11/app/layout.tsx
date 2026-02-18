@@ -1,6 +1,5 @@
 import "./globals.css";
 import Sidebar from "../components/Navbar/Sidebar";
-import Script from "next/script";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -9,12 +8,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Sidebar />
         {children}
 
-        {/* Umami Analytics */}
-        <Script
+        <script
+          defer
           src="/umami/script.js"
           data-website-id="2f6b943e-a310-45b8-b974-7dfc6a652293"
-          strategy="afterInteractive"
-        />
+        ></script>
       </body>
     </html>
   );
