@@ -115,28 +115,33 @@ export default function AboutSection() {
      SNAP ENGINE — ACTIVE CARD DETECTION
   -------------------------------------------------- */
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
     const handleScroll = () => {
-      const center = container.scrollTop + container.clientHeight / 2;
+      const center = window.scrollY + window.innerHeight / 2;
+
       let closestIndex = 0;
       let closestDistance = Infinity;
+
       sectionRefs.current.forEach((el, index) => {
         if (!el) return;
-        const elCenter = el.offsetTop + el.clientHeight / 2;
+
+        const rect = el.getBoundingClientRect();
+        const elCenter = rect.top + window.scrollY + rect.height / 2;
+
         const distance = Math.abs(center - elCenter);
+
         if (distance < closestDistance) {
           closestDistance = distance;
           closestIndex = index;
         }
       });
+
       setActiveStep(closestIndex);
     };
-    container.addEventListener('scroll', handleScroll, {
-      passive: true
-    });
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
-    return () => container.removeEventListener('scroll', handleScroll);
+
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
   /* --------------------------------------------------
      SCROLL TO SECTION
@@ -153,7 +158,7 @@ export default function AboutSection() {
      LAYOUT
   ====================================================== */
   return (
-    <div className="relative w-full h-screen overflow-hidden">
+    <div className="relative w-full min-h-screen">
       {/* ======================================================
             CREATIVE ABOUT HEADER
          ====================================================== */}
@@ -233,8 +238,7 @@ export default function AboutSection() {
       <div
         ref={containerRef}
         className="
-          overflow-y-scroll
-          h-[calc(100vh-200px)]
+          min-h-screen
           snap-y snap-mandatory
           scroll-smooth
         ">
