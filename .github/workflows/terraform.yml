@@ -78,7 +78,7 @@ jobs:
       - name: Generate inventory file
         run: |
           mkdir -p ansible/inventory
-          terraform output -raw ansible_inventory_yaml > ansible/inventory/generated.yml
+          terraform console <<EOF > ansible/inventory/generated.yml local.ansible_inventory_yaml EOF
 
       - name: Show inventory (debug)
         run: cat ansible/inventory/generated.yml
