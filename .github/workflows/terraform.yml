@@ -60,8 +60,8 @@ jobs:
             echo "Terraform plan failed"
             exit 1
           fi
-      - name: Show Plan Output (debug)
-        run: cat plan_output.txt
+      # - name: Show Plan Output (debug)
+      #   run: cat plan_output.txt
       #################################################
       # TERRAFORM APPLY ONLY IF INFRASTRUCTURE CHANGES ARE PRESENT
       #################################################
@@ -92,8 +92,8 @@ jobs:
           | awk 'NR==1 {match($0,/^ */); indent=RLENGTH} {print substr($0,indent+1)}' \
           > ansible/inventory/generated.yml
 
-      - name: Show inventory (debug)
-        run: cat ansible/inventory/generated.yml
+      # - name: Show inventory (debug)
+      #   run: cat ansible/inventory/generated.yml
 
       - name: Upload inventory artifact
         uses: actions/upload-artifact@v6.0.0

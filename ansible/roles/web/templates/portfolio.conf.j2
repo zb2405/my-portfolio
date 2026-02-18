@@ -15,7 +15,6 @@ server {
     add_header Permissions-Policy "geolocation=(), microphone=(), camera=()" always;
 
     add_header Content-Security-Policy "
-        default-src 'self';
         img-src 'self' data:;
         style-src 'self' 'unsafe-inline';
         connect-src 'self';
