@@ -147,12 +147,16 @@ const SKILL_CATEGORIES: Category[] = [
   {
     name: 'Zscaler',
     logoUrl: '/skills/zscaler.svg'
+  },
+  {
+    name: 'Cloudflare',
+    logoUrl: '/skills/cloudflare.svg'
   }]
 
 },
 {
   id: 'monitoring',
-  title: 'Monitoring & Observability',
+  title: 'Monitoring',
   icon: Activity,
   skills: [
   {
