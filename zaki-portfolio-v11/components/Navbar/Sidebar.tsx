@@ -195,7 +195,7 @@ function VisitorMetric() {
                  hover:shadow-[0_0_12px_rgba(34,211,238,0.25)]"
     >
       <span className="text-[15px] font-medium text-cyan-300 leading-none">
-        {count !== null ? (count / 1000).toFixed(1) + "K" : "--"}
+        {count !== null ? count.toLocaleString() : "--"}
       </span>
 
       <span className="text-[9px] tracking-[0.2em] text-zinc-400 uppercase">
