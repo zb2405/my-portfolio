@@ -55,7 +55,7 @@ jobs:
           name: ansible-inventory
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
-          run-id: ${{ github.event.workflow_run.id }}
+          run-id: ${{ github.event.workflow_run.workflow_run.id }}
           path: ansible/inventory
 
       #################################################
