@@ -24,7 +24,8 @@ jobs:
           name: ansible-inventory
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
-          path: infra/ansible/inventory
+          run-id: ${{ github.event.workflow_run.id }}
+          path: ansible/inventory
 
       - name: Run Ansible Playbook
         run: |
