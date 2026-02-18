@@ -41,7 +41,29 @@ jobs:
       #################################################
       # DEPLOY VIA ANSIBLE
       #################################################
-
+      - name: Generate inventory from Terraform output
+        run: |
+          mkdir -p ansible/inventory
+          cat <<'EOF' > ansible/inventory/generated.yml
+          all:
+            children:
+              cloudflared:
+                hosts:
+                  cloudflared:
+                    ansible_host: 192.168.0.11
+                    ansible_user: root
+              nginx:
+                hosts:
+                  nginx-web:
+                    ansible_host: 192.168.0.10
+                    ansible_user: root
+              umami:
+                hosts:
+                  umami-analytics:
+                    ansible_host: 192.168.0.12
+                    ansible_user: root
+          EOF
+          
       - name: Deploy via Ansible
         run: |
           ansible-playbook \
