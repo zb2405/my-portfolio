@@ -1,4 +1,5 @@
 ---
+
 - name: Ensure release directory exists
   file:
     path: /var/www/html/assets/releases
@@ -17,6 +18,11 @@
     state: directory
     owner: www-data
     group: www-data
+    mode: "0755"
+
+#################################################
+# UPLOAD BUILD (runs from GitHub runner → nginx)
+#################################################
 
 - name: Upload Vite build artifacts
   synchronize:
@@ -24,6 +30,11 @@
     dest: "{{ release_path }}/"
     delete: yes
     recursive: yes
+  delegate_to: localhost
+
+#################################################
+# UPDATE CURRENT SYMLINK (ZERO DOWNTIME SWITCH)
+#################################################
 
 - name: Update current symlink
   file:
@@ -32,14 +43,22 @@
     state: link
     force: yes
 
-- name: Find old releases
+#################################################
+# CLEAN OLD RELEASES (KEEP LAST 3)
+#################################################
+
+- name: Find release directories
   find:
     paths: /var/www/html/assets/releases
     file_type: directory
   register: release_dirs
 
+- name: Sort releases newest → oldest
+  set_fact:
+    sorted_releases: "{{ release_dirs.files | sort(attribute='mtime', reverse=True) }}"
+
 - name: Remove old releases (keep last 3)
   file:
     path: "{{ item.path }}"
     state: absent
-  loop: "{{ release_dirs.files | sort(attribute='path') | reverse | slice(start=3) }}"
+  loop: "{{ sorted_releases[3:] }}"
