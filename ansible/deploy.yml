@@ -1,8 +1,8 @@
-# - name: Configure nginx
-#   hosts: nginx
-#   become: yes
-#   roles:
-#     - web
+- name: Configure nginx
+  hosts: nginx
+  become: yes
+  roles:
+    - web
 
 # - name: Configure cloudflared
 #   hosts: cloudflared
