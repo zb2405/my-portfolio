@@ -68,7 +68,7 @@ const PROJECTS: Project[] = [
   'Designed and deployed a cloud-hosted web application using AWS EC2, RDS, S3, IAM, and Route 53. The project demonstrates full-stack cloud architecture including DNS routing, database integration, object storage, and role-based access control. A Python-based web application was deployed on EC2, storing uploaded files in S3 while persisting structured data in a MySQL database on RDS, showcasing scalable and cost-efficient cloud infrastructure design.',
   category: 'Cloud',
   tech: ['aws','amazon-ec2','amazon-s3','amazon-rds','route53','cloud-computing','cloud-architecture','web-deployment','linux'],
-  links: { github: '/public/pdfs/e2e_aws.pdf' }
+  links: { github: '/pdfs/e2e_aws.pdf' }
 },
 {
   id: '8',
@@ -77,7 +77,7 @@ const PROJECTS: Project[] = [
   'Designed and implemented a complete CI/CD pipeline integrating GitHub, Jenkins, Ansible, Docker, and Docker Hub to automate application build, testing, and deployment workflows. The pipeline automatically triggers Jenkins builds on source code commits, builds Docker images from a Dockerfile, pushes versioned images to Docker Hub, and deploys containers using Ansible playbooks across client nodes. The project demonstrates automated software delivery, container-based deployment, and infrastructure orchestration within a DevOps environment.',
   category: 'Cloud',
   tech: ['cicd','Jenkins','docker','ansible','DevOps','automation','pipeline','dockerhub','infrastructure-as-code'],
-  links: { github: '/public/pdfs/cicd.pdf' }
+  links: { github: '/pdfs/cicd.pdf' }
 },
 {
   id: '9',
