@@ -1,6 +1,7 @@
-name: Deploy Website
+name: Deploy Portfolio
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
 
@@ -8,29 +9,45 @@ jobs:
   deploy:
     runs-on: self-hosted
 
-    defaults:
-      run:
-        working-directory: zaki-portfolio-v11   # ⭐ IMPORTANT
-
     steps:
+
+      #################################################
+      # CHECKOUT
+      #################################################
+
       - name: Checkout repo
         uses: actions/checkout@v4
+
+      #################################################
+      # NODE SETUP
+      #################################################
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
+      #################################################
+      # BUILD VITE APP
+      #################################################
+
       - name: Install dependencies
+        working-directory: zaki-portfolio-v11
         run: npm ci
 
-      - name: Build Vite portfolio
+      - name: Build portfolio
+        working-directory: zaki-portfolio-v11
         run: npm run build
-        
+
+      #################################################
+      # GENERATE INVENTORY
+      #################################################
+
       - name: Generate inventory from Terraform output
         run: |
           mkdir -p ansible/inventory
-          cat <<'EOF' > ansible/inventory/generated.yml
+
+          cat > ansible/inventory/generated.yml <<EOF
           all:
             children:
               cloudflared:
@@ -49,6 +66,11 @@ jobs:
                     ansible_host: 192.168.0.12
                     ansible_user: root
           EOF
+
+      #################################################
+      # DEPLOY VIA ANSIBLE
+      #################################################
+
       - name: Deploy via Ansible
         run: |
           ansible-playbook \
