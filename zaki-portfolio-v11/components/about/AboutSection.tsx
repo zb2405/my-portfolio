@@ -233,8 +233,8 @@ export default function AboutSection() {
       <div
         ref={containerRef}
         className="
-          h-[calc(100vh-200px)]
-          overflow-y-scroll
+          h-auto
+          overflow-visible
           snap-y snap-mandatory
           scroll-smooth
         ">

@@ -75,8 +75,9 @@ jobs:
 
       #################################################
       # OUTPUT THE INVENTORY FILE
-      #################################################\
-      - name: Generate inventory file (no apply)
+      #################################################
+      - name: Generate inventory file if no infra changes
+        if: steps.plan.outputs.exitcode == '2'
         run: |
           mkdir -p ansible/inventory
 
