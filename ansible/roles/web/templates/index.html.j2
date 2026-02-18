@@ -95,10 +95,9 @@
         })
         .then(function (data) {
           var value = data && data.pageviews ? data.pageviews : 0;
-          var formatted = (value / 1000).toFixed(1) + "K";
 
           var el = document.getElementById("visitor-count");
-          if (el) el.textContent = "Views: " + formatted;
+          if (el) el.textContent = "Views: " + value;
         })
         .catch(function () {
           var el = document.getElementById("visitor-count");
