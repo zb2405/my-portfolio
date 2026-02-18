@@ -34,33 +34,57 @@ jobs:
       # TERRAFORM PLAN
       #################################################
       - name: Terraform Plan
+        id: plan
         env:
           TF_VAR_pm_api_url: ${{ secrets.PM_API_URL }}
           TF_VAR_pm_api_token_id: ${{ secrets.PM_API_TOKEN_ID }}
           TF_VAR_pm_api_token_secret: ${{ secrets.PM_API_TOKEN_SECRET }}
           TF_VAR_ct_password: ${{ secrets.CT_PASSWORD }}
           TF_VAR_ssh_public_key: ${{ secrets.ANSIBLE_SSH_PUBLIC_KEY }}
-        run: terraform plan
+        run: |
+          set +e
+          terraform plan -detailed-exitcode -out=tfplan
+          exitcode=$?
+          echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
+          echo "Terraform plan exit code: $exitcode"
+          set -e
+
+          # Exit code meanings:
+          # 0 = no changes
+          # 2 = changes present
+          # 1 = error
+
+          if [ "$exitcode" -eq 1 ]; then
+            echo "Terraform plan failed"
+            exit 1
+          fi
 
       #################################################
-      # TERRAFORM APPLY
+      # TERRAFORM APPLY ONLY IF INFRASTRUCTURE CHANGES ARE PRESENT
       #################################################
       - name: Terraform Apply
+        if: steps.plan.outputs.exitcode == '2'
         env:
           TF_VAR_pm_api_url: ${{ secrets.PM_API_URL }}
           TF_VAR_pm_api_token_id: ${{ secrets.PM_API_TOKEN_ID }}
           TF_VAR_pm_api_token_secret: ${{ secrets.PM_API_TOKEN_SECRET }}
           TF_VAR_ct_password: ${{ secrets.CT_PASSWORD }}
           TF_VAR_ssh_public_key: ${{ secrets.ANSIBLE_SSH_PUBLIC_KEY }}
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve tfplan
 
-      # -------------------------
-      # Create Ansible inventory
-      # -------------------------
+      #################################################
+      # GENERATE INVENTORY (ALWAYS RUN)
+      #################################################
       - name: Generate inventory file
         run: |
           mkdir -p ansible/inventory
-          terraform -chdir=terraform output -raw ansible_inventory_yaml > ansible/inventory/generated.yml
+          terraform output -raw ansible_inventory_yaml > ansible/inventory/generated.yml
 
       - name: Show inventory (debug)
         run: cat ansible/inventory/generated.yml
+
+      - name: Upload inventory artifact
+        uses: actions/upload-artifact@v6.0.0
+        with:
+          name: ansible-inventory
+          path: infra/ansible/inventory/generated.yml
