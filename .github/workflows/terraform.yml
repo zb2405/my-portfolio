@@ -79,9 +79,11 @@ jobs:
         run: |
           mkdir -p ansible/inventory
 
-          terraform console <<EOF > ansible/inventory/generated.yml
-          local.ansible_inventory_yaml
-          EOF
+          terraform plan -out=tfplan >/dev/null
+
+          terraform show -json tfplan \
+            | jq -r '.planned_values.outputs.ansible_inventory_yaml.value' \
+            > ansible/inventory/generated.yml
         
 
       - name: Show inventory (debug)
