@@ -57,6 +57,11 @@
     src: index.html.j2
     dest: /var/www/html/index.html
 
+- name: Deploy visitor counter script
+  template:
+    src: visitors.js.j2
+    dest: /var/www/html/visitors.js
+
 - name: Validate nginx config
   command: nginx -t
   changed_when: false
