@@ -1,6 +1,19 @@
+#################################################
+# REDIRECT ROOT DOMAIN → WWW (CANONICAL DOMAIN)
+#################################################
+server {
+    listen 80;
+    server_name zakibawade.in;
+
+    return 301 https://www.zakibawade.in$request_uri;
+}
+
+#################################################
+# MAIN WEBSITE
+#################################################
 server {
     listen 80 default_server;
-    server_name _;
+    server_name www.zakibawade.in;
 
     root /var/www/html;
     index index.html;
@@ -18,8 +31,8 @@ server {
         default-src 'self';
         img-src 'self' data:;
         style-src 'self' 'unsafe-inline';
-        script-src 'self' http://192.168.0.12:3000;
-        connect-src 'self' http://192.168.0.12:3000;
+        script-src 'self';
+        connect-src 'self';
         font-src 'self';
         object-src 'none';
         base-uri 'self';
