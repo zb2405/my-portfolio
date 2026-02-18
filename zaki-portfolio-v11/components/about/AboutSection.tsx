@@ -200,16 +200,16 @@ export function AboutSection() {
       {/* SNAP SCROLL CONTAINER */}
       <div
         ref={containerRef}
-        className="flex-1 min-h-0 mt-8 overflow-y-scroll snap-y snap-mandatory scroll-smooth">
+        className="flex-1 min-h-0 mt-8 overflow-y-auto snap-y snap-proximity scroll-smooth">
 
-        <div className="w-full max-w-5xl mx-auto pl-[140px] pr-16">
+       <div className="w-full max-w-5xl mx-auto pl-[140px] pr-16 pb-[60vh]">
           {TIMELINE_DATA.map((item, index) =>
           <section
             key={item.id}
             ref={(el) => {
               sectionRefs.current[index] = el;
             }}
-            className="snap-start min-h-[85vh] flex items-start pt-14">
+            className="snap-start min-h-[70vh] flex items-start pt-10 pb-6">
 
               <motion.div
               initial={{
@@ -223,7 +223,7 @@ export function AboutSection() {
               transition={{
                 duration: 0.5
               }}
-              className={`relative w-full p-14 rounded-2xl border transition-all duration-700
+              className={`relative w-full p-10 rounded-2xl border transition-all duration-700
                   ${activeStep === index ? 'bg-[#111427] border-cyan-500/20 shadow-[0_0_60px_rgba(6,182,212,0.08)]' : 'bg-[#111427]/40 border-white/5'}`}>
 
                 <div className="flex items-center gap-5 mb-10">

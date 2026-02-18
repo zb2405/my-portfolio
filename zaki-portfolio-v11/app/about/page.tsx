@@ -4,7 +4,7 @@ import { AboutSection } from '../../components/about/AboutSection';
 
 export function AboutPage() {
   return (
-    <main className="relative w-full h-screen overflow-hidden bg-[#060818]">
+    <main className="relative w-full h-screen overflow-hidden">
       <div className="pl-[96px] pt-28 h-full flex flex-col">
         <AboutSection />
       </div>
