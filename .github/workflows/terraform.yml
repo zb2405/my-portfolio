@@ -58,7 +58,7 @@ jobs:
             echo "Terraform plan failed"
             exit 1
           fi
-      - name: Show inventory (debug)
+      - name: Show Plan Output (debug)
         run: cat plan_output.txt
       #################################################
       # TERRAFORM APPLY ONLY IF INFRASTRUCTURE CHANGES ARE PRESENT
@@ -80,8 +80,13 @@ jobs:
         run: |
           mkdir -p ansible/inventory
 
-          awk '/content = <<-EOT/{flag=1;next}/EOT/{flag=0}flag' plan_output.txt \
-            | sed 's/^ *//' > ansible/inventory/generated.yml
+          awk '
+          /content.*<<-EOT/ {flag=1;next}
+          /^[[:space:]]*EOT/ {flag=0}
+          flag
+          ' plan_output.txt \
+          | sed 's/^ *//' \
+          > ansible/inventory/generated.yml
 
       - name: Show inventory (debug)
         run: cat ansible/inventory/generated.yml
