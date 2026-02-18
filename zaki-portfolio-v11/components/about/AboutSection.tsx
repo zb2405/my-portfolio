@@ -1,11 +1,8 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Terminal, Coffee, Code, Server } from 'lucide-react';
-import { StatusBadge } from '../ui/StatusBadge';
-import { TerminalHeader } from '../ui/TerminalHeader';
-/* ======================================================
-   DATA
-====================================================== */
+import { StatusBadge } from './ui/StatusBadge';
+import { TerminalHeader } from './ui/TerminalHeader';
 type TimelineItem = {
   id: string;
   title: string;
@@ -41,7 +38,7 @@ const TIMELINE_DATA: TimelineItem[] = [
   content:
   <>
         <p className="mb-4">
-          Somewhere along the way I realized I didn’t enjoy firefighting as much
+          Somewhere along the way I realized I didn't enjoy firefighting as much
           as preventing the fire in the first place.
         </p>
         <p className="mb-4">
@@ -65,7 +62,7 @@ const TIMELINE_DATA: TimelineItem[] = [
   content:
   <>
         <p className="mb-4">
-          I’ve learned that good infrastructure doesn’t try to be impressive. It
+          I've learned that good infrastructure doesn't try to be impressive. It
           just needs to make sense.
         </p>
         <p>
@@ -84,36 +81,30 @@ const TIMELINE_DATA: TimelineItem[] = [
   content:
   <>
         <p className="mb-4">
-          Outside of all that, life stays pretty grounded. I’m usually somewhere
+          Outside of all that, life stays pretty grounded. I'm usually somewhere
           between a long walk, a late-night electronic music festival, and
-          convincing friends to try a new restaurant I’ve just discovered.
+          convincing friends to try a new restaurant I've just discovered.
         </p>
         <p className="mb-4">
-          I’ve been getting more consistent with the gym lately — nothing
+          I've been getting more consistent with the gym lately — nothing
           intense, just trying to be a slightly healthier version of myself.
         </p>
         <p>
-          I cook once in a while, mostly for people I love, and I’m always up
-          for board games or a quiet Netflix night. When I’m not doing any of
-          that, I’m probably rebuilding my own infrastructure. I run a Proxmox
+          I cook once in a while, mostly for people I love, and I'm always up
+          for board games or a quiet Netflix night. When I'm not doing any of
+          that, I'm probably rebuilding my own infrastructure. I run a Proxmox
           lab, added AdGuard to keep my network clean, built my own GitHub
           runner using Infrastructure as Code, and yes — this website runs on
-          that same homelab setup. It’s my version of relaxing.
+          that same homelab setup. It's my version of relaxing.
         </p>
       </>
 
 }];
 
-/* ======================================================
-   ABOUT SECTION
-====================================================== */
-export default function AboutSection() {
+export function AboutSection() {
   const [activeStep, setActiveStep] = useState(0);
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  /* --------------------------------------------------
-     SNAP ENGINE — ACTIVE CARD DETECTION
-  -------------------------------------------------- */
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -138,9 +129,6 @@ export default function AboutSection() {
     handleScroll();
     return () => container.removeEventListener('scroll', handleScroll);
   }, []);
-  /* --------------------------------------------------
-     SCROLL TO SECTION
-  -------------------------------------------------- */
   const scrollToSection = useCallback((index: number) => {
     const el = sectionRefs.current[index];
     if (!el) return;
@@ -149,28 +137,16 @@ export default function AboutSection() {
       block: 'center'
     });
   }, []);
-  /* ======================================================
-     LAYOUT
-  ====================================================== */
   return (
-    <div className="relative w-full min-h-screen">
-      {/* ======================================================
-            CREATIVE ABOUT HEADER
-         ====================================================== */}
-
-      {/* Removed ml-[120px] to use global layout instead */}
-      <div className="relative z-20 w-full max-w-6xl pr-6">
-        {/* SYSTEM TAG */}
+    <div className="relative w-full h-full flex flex-col overflow-hidden">
+      {/* HEADER */}
+      <div className="relative z-20 w-full max-w-6xl pr-6 flex-shrink-0">
         <StatusBadge
           label="identity_profile: loaded"
           status="active"
           className="mb-8" />
 
-
-        {/* MAIN TITLE */}
         <TerminalHeader text="about_me" />
-
-        {/* SUBTITLE */}
         <motion.p
           initial={{
             opacity: 0,
@@ -190,11 +166,7 @@ export default function AboutSection() {
         </motion.p>
       </div>
 
-      {/* ======================================================
-             LEFT TIMELINE NAV
-         ====================================================== */}
-
-      {/* Adjusted left position to account for new layout: 72px sidebar + 24px gap = 96px */}
+      {/* LEFT TIMELINE NAV */}
       <div className="hidden md:flex fixed left-[96px] top-1/2 -translate-y-1/2 z-[60] flex-col items-start">
         {TIMELINE_DATA.map((item, index) =>
         <button
@@ -210,7 +182,6 @@ export default function AboutSection() {
               className={`w-2.5 h-2.5 rounded-full ${activeStep === index ? 'bg-cyan-400' : index < activeStep ? 'bg-emerald-500' : 'bg-white/20'}`} />
 
             </div>
-
             <div
             className={`ml-5 whitespace-nowrap transition-all duration-300
               ${activeStep === index ? 'opacity-100 translate-x-0' : 'opacity-0 group-hover:opacity-70 -translate-x-2 group-hover:translate-x-0'}`}>
@@ -226,44 +197,19 @@ export default function AboutSection() {
         )}
       </div>
 
-      {/* ======================================================
-             SNAP SCROLL CONTAINER
-         ====================================================== */}
-
+      {/* SNAP SCROLL CONTAINER */}
       <div
         ref={containerRef}
-        className="
-          h-[calc(100vh-200px)]
-          overflow-y-scroll
-          snap-y snap-mandatory
-          scroll-smooth
-        ">
+        className="flex-1 min-h-0 mt-8 overflow-y-scroll snap-y snap-mandatory scroll-smooth">
 
-
-
-
-
-
-        {/* BIGGER WIDTH + CENTERED */}
-        {/* Adjusted padding to align with new layout: pl-[180px] -> pl-[140px] relative to container */}
         <div className="w-full max-w-5xl mx-auto pl-[140px] pr-16">
           {TIMELINE_DATA.map((item, index) =>
           <section
             key={item.id}
-            ref={(el) => sectionRefs.current[index] = el}
-            className="
-                snap-start
-                min-h-[85vh]      // 👈 smaller height pulls cards upward
-                flex
-                items-start       // 👈 aligns card toward top instead of center
-                pt-14            // 👈 fine-tune vertical position (adjust 6–16)
-              ">
-
-
-
-
-
-
+            ref={(el) => {
+              sectionRefs.current[index] = el;
+            }}
+            className="snap-start min-h-[85vh] flex items-start pt-14">
 
               <motion.div
               initial={{
@@ -277,10 +223,8 @@ export default function AboutSection() {
               transition={{
                 duration: 0.5
               }}
-              className={`
-                  relative w-full p-14 rounded-2xl border transition-all duration-700
-                  ${activeStep === index ? 'bg-[#111427] border-cyan-500/20 shadow-[0_0_60px_rgba(6,182,212,0.08)]' : 'bg-[#111427]/40 border-white/5'}
-                `}>
+              className={`relative w-full p-14 rounded-2xl border transition-all duration-700
+                  ${activeStep === index ? 'bg-[#111427] border-cyan-500/20 shadow-[0_0_60px_rgba(6,182,212,0.08)]' : 'bg-[#111427]/40 border-white/5'}`}>
 
                 <div className="flex items-center gap-5 mb-10">
                   <div
@@ -288,16 +232,13 @@ export default function AboutSection() {
 
                     <item.icon className="w-7 h-7" />
                   </div>
-
                   <h2 className="text-4xl font-bold text-white">
                     {item.title}
                   </h2>
                 </div>
-
                 <div className="text-xl text-gray-400 leading-relaxed">
                   {item.content}
                 </div>
-
                 <AnimatePresence>
                   {activeStep === index &&
                 <motion.div
