@@ -6,7 +6,7 @@
 
   <title>zakibawade.in — Coming Soon</title>
 
-  <!-- Umami Analytics -->
+  <!-- Umami Analytics (proxied via nginx /umami/) -->
   <script
     defer
     src="/umami/script.js"
@@ -55,6 +55,14 @@
       background:rgba(56,189,248,.1);
       border:1px solid rgba(56,189,248,.4);
       font-size:.9rem;
+      margin-top:12px;
+    }
+
+    .visitor-counter {
+      margin-top:18px;
+      font-size:1rem;
+      color:#22d3ee;
+      letter-spacing:.08em;
     }
   </style>
 </head>
@@ -64,13 +72,40 @@
     <h1>🚧 Website Coming Soon</h1>
 
     <p>
-      Infrastructure deployed via Terraform + Ansible.
+      Infrastructure deployed via Terraform + Ansible.<br/>
       Portfolio launching soon.
     </p>
 
     <div class="badge">
       Nginx • Cloudflare Tunnel • Umami Analytics
     </div>
+
+    <!-- UNIQUE VISITOR COUNTER (nginx cached endpoint) -->
+    <div id="visitor-count" class="visitor-counter">
+      Visitors: --
+    </div>
   </div>
+
+  <script>
+    // Fetch visitor count from nginx cached endpoint
+    (function () {
+      fetch("/api/visitors", { headers: { "Accept": "application/json" } })
+        .then(function (res) {
+          if (!res.ok) throw new Error("Bad response");
+          return res.json();
+        })
+        .then(function (data) {
+          var value = (data && data[0] && data[0].value) ? data[0].value : 0;
+          var formatted = (value / 1000).toFixed(1) + "K";
+
+          var el = document.getElementById("visitor-count");
+          if (el) el.textContent = "Visitors: " + formatted;
+        })
+        .catch(function () {
+          var el = document.getElementById("visitor-count");
+          if (el) el.textContent = "Visitors: 0";
+        });
+    })();
+  </script>
 </body>
 </html>

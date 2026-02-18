@@ -55,6 +55,16 @@ http {
     limit_req_zone $binary_remote_addr zone=req_limit:10m rate=10r/s;
 
     #################################################
+    # UMAMI CACHE (EDGE METRICS CACHE)
+    #################################################
+
+    proxy_cache_path /var/cache/nginx/umami
+                     levels=1:2
+                     keys_zone=umami_cache:10m
+                     inactive=10m
+                     use_temp_path=off;
+
+    #################################################
     # INCLUDE SITES
     #################################################
 
