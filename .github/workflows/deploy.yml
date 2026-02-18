@@ -76,4 +76,4 @@ jobs:
           ansible-playbook \
             -i ansible/inventory/generated.yml \
             ansible-deploy/deploy.yml \
-            --extra-vars "vite_build_path=zaki-portfolio-v11/dist"
+            --extra-vars "vite_build_path=${GITHUB_WORKSPACE}/zaki-portfolio-v11/dist"
