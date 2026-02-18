@@ -151,7 +151,7 @@ export default function AboutSection() {
     if (!el) return;
     el.scrollIntoView({
       behavior: 'smooth',
-      block: 'center'
+      block: 'start'
     });
   }, []);
   /* ======================================================
