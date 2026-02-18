@@ -153,7 +153,7 @@ export default function AboutSection() {
      LAYOUT
   ====================================================== */
   return (
-    <div className="relative w-full min-h-screen">
+    <div className="relative w-full h-screen overflow-hidden">
       {/* ======================================================
             CREATIVE ABOUT HEADER
          ====================================================== */}
@@ -233,8 +233,8 @@ export default function AboutSection() {
       <div
         ref={containerRef}
         className="
-          h-auto
-          overflow-visible
+          overflow-y-scroll
+          h-[calc(100vh-200px)]
           snap-y snap-mandatory
           scroll-smooth
         ">
