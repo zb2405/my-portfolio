@@ -26,14 +26,11 @@ server {
         frame-ancestors 'none';
     " always;
 
+    #################################################
+    # RATE LIMITING (APPLIED ONCE)
+    #################################################
+
     limit_req zone=req_limit burst=20 nodelay;
-
-    location ~ /\.(?!well-known) {
-        deny all;
-        access_log off;
-        log_not_found off;
-    }
-
 
     #################################################
     # BLOCK HIDDEN FILES
@@ -70,9 +67,9 @@ server {
         proxy_cache umami_cache;
         proxy_cache_valid 200 60s;
 
-        proxy_pass http://192.168.0.12:3000/api/websites/2f6b943e-a310-45b8-b974-7dfc6a652293/metrics?type=visitors;
+        proxy_pass http://192.168.0.12:3000/api/websites/2f6b943e-a310-45b8-b974-7dfc6a652293/stats;
 
-        proxy_set_header Authorization "Bearer YOUR_API_TOKEN";
+        proxy_set_header Authorization "Bearer {{ umami_token }}";
         proxy_set_header Host zakibawade.in;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Real-IP $remote_addr;
