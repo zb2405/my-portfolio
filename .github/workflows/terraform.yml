@@ -53,3 +53,14 @@ jobs:
           TF_VAR_ct_password: ${{ secrets.CT_PASSWORD }}
           TF_VAR_ssh_public_key: ${{ secrets.ANSIBLE_SSH_PUBLIC_KEY }}
         run: terraform apply -auto-approve
+
+      # -------------------------
+      # Create Ansible inventory
+      # -------------------------
+      - name: Generate inventory file
+        run: |
+          mkdir -p ansible/inventory
+          terraform -chdir=terraform output -raw ansible_inventory_yaml > ansible/inventory/generated.yml
+
+      - name: Show inventory (debug)
+        run: cat ansible/inventory/generated.yml

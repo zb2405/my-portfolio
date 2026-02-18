@@ -2,9 +2,16 @@ name: Configure Containers with Ansible
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Terraform Proxmox Deploy"]
+    types:
+      - completed
 
 jobs:
   ansible:
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
     runs-on: self-hosted
 
     steps:
