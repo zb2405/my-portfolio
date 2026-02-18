@@ -1,0 +1,15 @@
+---
+#################################################
+# DEPLOY WEBSITE (VITE STATIC BUILD)
+#################################################
+
+- name: Deploy Portfolio Website
+  hosts: nginx-web
+  become: true
+  gather_facts: true
+
+  vars:
+    vite_build_path: "{{ vite_build_path | default('dist') }}"
+
+  roles:
+    - web_deploy
