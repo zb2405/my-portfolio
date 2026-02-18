@@ -58,7 +58,8 @@ jobs:
             echo "Terraform plan failed"
             exit 1
           fi
-
+      - name: Show inventory (debug)
+        run: cat plan_output.txt
       #################################################
       # TERRAFORM APPLY ONLY IF INFRASTRUCTURE CHANGES ARE PRESENT
       #################################################
