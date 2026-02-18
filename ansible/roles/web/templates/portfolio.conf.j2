@@ -34,11 +34,6 @@ server {
         log_not_found off;
     }
 
-    #################################################
-    # RATE LIMITING
-    #################################################
-
-    limit_req zone=req_limit burst=20 nodelay;
 
     #################################################
     # BLOCK HIDDEN FILES
