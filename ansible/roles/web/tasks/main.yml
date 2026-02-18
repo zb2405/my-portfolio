@@ -79,21 +79,21 @@
 # STATIC FILES → PERSISTENT MOUNT
 #################################################
 
-- name: Deploy index.html (persistent)
-  template:
-    src: index.html.j2
-    dest: /var/www/html/assets/index.html
-    owner: www-data
-    group: www-data
-    mode: "0644"
+# - name: Deploy index.html (persistent)
+#   template:
+#     src: index.html.j2
+#     dest: /var/www/html/assets/index.html
+#     owner: www-data
+#     group: www-data
+#     mode: "0644"
 
-- name: Deploy visitor counter script (persistent)
-  template:
-    src: visitors.js.j2
-    dest: /var/www/html/assets/visitors.js
-    owner: www-data
-    group: www-data
-    mode: "0644"
+# - name: Deploy visitor counter script (persistent)
+#   template:
+#     src: visitors.js.j2
+#     dest: /var/www/html/assets/visitors.js
+#     owner: www-data
+#     group: www-data
+#     mode: "0644"
 
 #################################################
 # VALIDATE
@@ -109,7 +109,7 @@
 
 - name: Check for legacy index.html in /var/www/html
   stat:
-    path: /var/www/html/index.html
+    path: /var/www/html/assets/index.html
   register: legacy_index
 
 - name: Remove old static files if legacy content exists
@@ -117,6 +117,5 @@
     path: "{{ item }}"
     state: absent
   loop:
-    - /var/www/html/index.html
-    - /var/www/html/visitors.js
+    - /var/www/html/assets/index.html
   when: legacy_index.stat.exists
