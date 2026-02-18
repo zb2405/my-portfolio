@@ -26,6 +26,11 @@
     path: /etc/nginx/sites-enabled/default
     state: absent
 
+- name: Deploy index.html
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+
 - name: Validate nginx config
   command: nginx -t
   changed_when: false
