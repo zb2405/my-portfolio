@@ -115,33 +115,28 @@ export default function AboutSection() {
      SNAP ENGINE — ACTIVE CARD DETECTION
   -------------------------------------------------- */
   useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
     const handleScroll = () => {
-      const center = window.scrollY + window.innerHeight / 2;
-
+      const center = container.scrollTop + container.clientHeight / 2;
       let closestIndex = 0;
       let closestDistance = Infinity;
-
       sectionRefs.current.forEach((el, index) => {
         if (!el) return;
-
-        const rect = el.getBoundingClientRect();
-        const elCenter = rect.top + window.scrollY + rect.height / 2;
-
+        const elCenter = el.offsetTop + el.clientHeight / 2;
         const distance = Math.abs(center - elCenter);
-
         if (distance < closestDistance) {
           closestDistance = distance;
           closestIndex = index;
         }
       });
-
       setActiveStep(closestIndex);
     };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    container.addEventListener('scroll', handleScroll, {
+      passive: true
+    });
     handleScroll();
-
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
   }, []);
   /* --------------------------------------------------
      SCROLL TO SECTION
@@ -151,7 +146,7 @@ export default function AboutSection() {
     if (!el) return;
     el.scrollIntoView({
       behavior: 'smooth',
-      block: 'start'
+      block: 'center'
     });
   }, []);
   /* ======================================================
@@ -238,7 +233,8 @@ export default function AboutSection() {
       <div
         ref={containerRef}
         className="
-          min-h-screen
+          h-[calc(100vh-200px)]
+          overflow-y-scroll
           snap-y snap-mandatory
           scroll-smooth
         ">
