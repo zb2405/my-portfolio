@@ -53,6 +53,8 @@ jobs:
         uses: actions/download-artifact@v7.0.0
         with:
           name: ansible-inventory
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
           path: ansible/inventory
 
       #################################################
