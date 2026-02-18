@@ -41,4 +41,4 @@ jobs:
           --extra-vars "umami_db_password=${{ secrets.UMAMI_DB_PASSWORD }}" \
           --extra-vars "umami_app_secret=${{ secrets.UMAMI_APP_SECRET }}" \
           --extra-vars "umami_username=${{ secrets.UMAMI_USERNAME }}" \
-          --extra-vars "umami_password=${{ secrets.UMAMI_PASSWORD }}"
+          --extra-vars "umami_password=${{ secrets.UMAMI_PASSWORD }}" -vvv
