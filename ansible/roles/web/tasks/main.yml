@@ -103,19 +103,20 @@
   command: nginx -t
   changed_when: false
 
-#################################################
-# CLEAN OLD STATIC FILES (LEGACY PATH)
-#################################################
+# #################################################
+# # CLEAN OLD STATIC FILES (LEGACY PATH)
+# #################################################
 
-- name: Check for legacy index.html in /var/www/html
-  stat:
-    path: /var/www/html/assets/index.html
-  register: legacy_index
+# - name: Check for legacy index.html in /var/www/html
+#   stat:
+#     path: /var/www/html/assets/index.html
+#   register: legacy_index
 
-- name: Remove old static files if legacy content exists
-  file:
-    path: "{{ item }}"
-    state: absent
-  loop:
-    - /var/www/html/assets/index.html
-  when: legacy_index.stat.exists
+# - name: Remove old static files if legacy content exists
+#   file:
+#     path: "{{ item }}"
+#     state: absent
+#   loop:
+#     - /var/www/html/assets/index.html
+#     - /var/www/html/assets/visitors.js
+#   when: legacy_index.stat.exists

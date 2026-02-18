@@ -1,0 +1,45 @@
+---
+- name: Ensure release directory exists
+  file:
+    path: /var/www/html/assets/releases
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: "0755"
+
+- name: Create new release folder
+  set_fact:
+    release_path: "/var/www/html/assets/releases/{{ ansible_date_time.epoch }}"
+
+- name: Create release directory
+  file:
+    path: "{{ release_path }}"
+    state: directory
+    owner: www-data
+    group: www-data
+
+- name: Upload Vite build artifacts
+  synchronize:
+    src: "{{ vite_build_path }}/"
+    dest: "{{ release_path }}/"
+    delete: yes
+    recursive: yes
+
+- name: Update current symlink
+  file:
+    src: "{{ release_path }}"
+    dest: /var/www/html/assets/current
+    state: link
+    force: yes
+
+- name: Find old releases
+  find:
+    paths: /var/www/html/assets/releases
+    file_type: directory
+  register: release_dirs
+
+- name: Remove old releases (keep last 3)
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ release_dirs.files | sort(attribute='path') | reverse | slice(start=3) }}"
