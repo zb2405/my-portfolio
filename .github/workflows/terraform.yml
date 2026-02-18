@@ -43,7 +43,7 @@ jobs:
           TF_VAR_ssh_public_key: ${{ secrets.ANSIBLE_SSH_PUBLIC_KEY }}
         run: |
           set +e
-          terraform plan -detailed-exitcode -out=tfplan
+          terraform plan -detailed-exitcode -out=tfplan | tee plan_output.txt
           exitcode=$?
           echo "exitcode=$exitcode" >> $GITHUB_OUTPUT
           echo "Terraform plan exit code: $exitcode"
@@ -79,12 +79,8 @@ jobs:
         run: |
           mkdir -p ansible/inventory
 
-          terraform plan -out=tfplan >/dev/null
-
-          terraform show -json tfplan \
-            | jq -r '.planned_values.outputs.ansible_inventory_yaml.value' \
-            > ansible/inventory/generated.yml
-        
+          awk '/content = <<-EOT/{flag=1;next}/EOT/{flag=0}flag' plan_output.txt \
+            | sed 's/^ *//' > ansible/inventory/generated.yml
 
       - name: Show inventory (debug)
         run: cat ansible/inventory/generated.yml
