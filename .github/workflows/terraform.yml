@@ -16,13 +16,13 @@ jobs:
       # CHECKOUT
       #################################################
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
 
       #################################################
       # SETUP TERRAFORM
       #################################################
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v3.1.2
 
       #################################################
       # TERRAFORM INIT
