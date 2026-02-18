@@ -86,6 +86,7 @@ jobs:
           flag
           ' plan_output.txt \
           | sed 's/"//g' \
+          | sed '1s/^[[:space:]]*//' \
           | sed 's/^[[:space:]]\{8\}//' \
           > ansible/inventory/generated.yml
 
