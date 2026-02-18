@@ -4,6 +4,22 @@
     state: present
     update_cache: yes
 
+#################################################
+# ENSURE PERSISTENT ASSETS DIRECTORY EXISTS
+#################################################
+
+- name: Ensure assets directory exists (persistent mount)
+  file:
+    path: /var/www/html/assets
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: "0755"
+
+#################################################
+# NGINX CACHE DIR
+#################################################
+
 - name: Create nginx cache directory
   file:
     path: /var/cache/nginx/umami
@@ -11,6 +27,10 @@
     owner: www-data
     group: www-data
     mode: "0755"
+
+#################################################
+# UMAMI AUTH TOKEN
+#################################################
 
 - name: Login to Umami API
   uri:
@@ -29,6 +49,9 @@
   set_fact:
     umami_token: "{{ umami_login.json.token }}"
 
+#################################################
+# NGINX CONFIG
+#################################################
 
 - name: Ensure nginx conf.d exists
   file:
@@ -52,17 +75,48 @@
     path: /etc/nginx/sites-enabled/default
     state: absent
 
-- name: Deploy index.html
+#################################################
+# STATIC FILES → PERSISTENT MOUNT
+#################################################
+
+- name: Deploy index.html (persistent)
   template:
     src: index.html.j2
-    dest: /var/www/html/index.html
+    dest: /var/www/html/assets/index.html
+    owner: www-data
+    group: www-data
+    mode: "0644"
 
-- name: Deploy visitor counter script
+- name: Deploy visitor counter script (persistent)
   template:
     src: visitors.js.j2
-    dest: /var/www/html/visitors.js
+    dest: /var/www/html/assets/visitors.js
+    owner: www-data
+    group: www-data
+    mode: "0644"
+
+#################################################
+# VALIDATE
+#################################################
 
 - name: Validate nginx config
   command: nginx -t
   changed_when: false
 
+#################################################
+# CLEAN OLD STATIC FILES (LEGACY PATH)
+#################################################
+
+- name: Check for legacy index.html in /var/www/html
+  stat:
+    path: /var/www/html/index.html
+  register: legacy_index
+
+- name: Remove old static files if legacy content exists
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /var/www/html/index.html
+    - /var/www/html/visitors.js
+  when: legacy_index.stat.exists
