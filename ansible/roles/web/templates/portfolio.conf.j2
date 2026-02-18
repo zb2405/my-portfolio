@@ -67,7 +67,7 @@ server {
         proxy_cache umami_cache;
         proxy_cache_valid 200 60s;
 
-        proxy_pass http://192.168.0.12:3000/api/websites/2f6b943e-a310-45b8-b974-7dfc6a652293/stats;
+        proxy_pass http://192.168.0.12:3000/api/websites/{{ umami_website_id }}/stats?startAt=0&endAt=4102444800000;
 
         proxy_set_header Authorization "Bearer {{ umami_token }}";
         proxy_set_header Host zakibawade.in;

@@ -6,7 +6,7 @@
 
   <title>zakibawade.in — Coming Soon</title>
 
-  <!-- Umami Analytics (proxied via nginx /umami/) -->
+  <!-- Umami Analytics (proxied via nginx) -->
   <script
     defer
     src="/umami/script.js"
@@ -80,14 +80,13 @@
       Nginx • Cloudflare Tunnel • Umami Analytics
     </div>
 
-    <!-- UNIQUE VISITOR COUNTER (nginx cached endpoint) -->
+    <!-- PAGEVIEW COUNTER -->
     <div id="visitor-count" class="visitor-counter">
-      Visitors: --
+      Views: --
     </div>
   </div>
 
   <script>
-    // Fetch visitor count from nginx cached endpoint
     (function () {
       fetch("/api/visitors", { headers: { "Accept": "application/json" } })
         .then(function (res) {
@@ -95,15 +94,15 @@
           return res.json();
         })
         .then(function (data) {
-          var value = (data && data[0] && data[0].value) ? data[0].value : 0;
+          var value = data && data.pageviews ? data.pageviews : 0;
           var formatted = (value / 1000).toFixed(1) + "K";
 
           var el = document.getElementById("visitor-count");
-          if (el) el.textContent = "Visitors: " + formatted;
+          if (el) el.textContent = "Views: " + formatted;
         })
         .catch(function () {
           var el = document.getElementById("visitor-count");
-          if (el) el.textContent = "Visitors: 0";
+          if (el) el.textContent = "Views: 0";
         });
     })();
   </script>
