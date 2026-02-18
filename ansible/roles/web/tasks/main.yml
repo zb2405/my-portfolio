@@ -3,6 +3,7 @@
     name: nginx
     state: present
     update_cache: yes
+
 - name: Create nginx cache directory
   file:
     path: /var/cache/nginx/umami
@@ -10,7 +11,25 @@
     owner: www-data
     group: www-data
     mode: "0755"
-    
+
+- name: Login to Umami API
+  uri:
+    url: "http://192.168.0.12:3000/api/auth/login"
+    method: POST
+    body_format: json
+    body:
+      username: "{{ umami_username }}"
+      password: "{{ umami_password }}"
+    headers:
+      Content-Type: "application/json"
+    return_content: yes
+  register: umami_login
+
+- name: Store Umami token
+  set_fact:
+    umami_token: "{{ umami_login.json.token }}"
+
+
 - name: Ensure nginx conf.d exists
   file:
     path: /etc/nginx/conf.d
@@ -41,3 +60,4 @@
 - name: Validate nginx config
   command: nginx -t
   changed_when: false
+
