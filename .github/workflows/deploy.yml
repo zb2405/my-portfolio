@@ -7,7 +7,9 @@ on:
     workflows: ["Configure Containers with Ansible"]
     types:
       - completed
-
+permissions:
+  actions: read
+  contents: read
 jobs:
   deploy:
     if: >
@@ -20,7 +22,7 @@ jobs:
       #################################################
       # CHECKOUT
       #################################################
-
+      
       - name: Checkout repo
         uses: actions/checkout@v6.0.2
 
@@ -48,6 +50,16 @@ jobs:
       #################################################
       # DOWNLOAD INVENTORY
       #################################################
+      - name: Download terraform run id
+        uses: actions/download-artifact@v7.0.0
+        with:
+          name: terraform-run-id
+          github-token: ${{ github.token }}
+          run-id: ${{ github.event.workflow_run.id }}
+          repository: ${{ github.repository }}
+
+      - name: Read terraform run id
+        run: echo "TF_RUN_ID=$(cat terraform_run_id.txt)" >> $GITHUB_ENV
 
       - name: Download inventory artifact
         uses: actions/download-artifact@v7.0.0
@@ -55,7 +67,7 @@ jobs:
           name: ansible-inventory
           github-token: ${{ github.token }}
           repository: ${{ github.repository }}
-          run-id: ${{ github.event.workflow_run.workflow_run.id }}
+          run-id: ${{ env.TF_RUN_ID }}
           path: ansible/inventory
 
       #################################################

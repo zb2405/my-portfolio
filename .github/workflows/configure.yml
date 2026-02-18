@@ -27,6 +27,18 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           path: ansible/inventory
 
+      - name: Save Terraform run id
+        run: echo "${{ github.event.workflow_run.id }}" > terraform_run_id.txt
+
+      - name: Show Terraform Run ID (debug)
+        run: cat terraform_run_id.txt      
+        
+      - name: Upload terraform run id
+        uses: actions/upload-artifact@v6.0.0
+        with:
+          name: terraform-run-id
+          path: terraform_run_id.txt
+    
       - name: Run Ansible Playbook
         run: |
           ansible-playbook -i ansible/inventory/generated.yml ansible/deploy.yml \
@@ -36,3 +48,5 @@ jobs:
           --extra-vars "umami_username=${{ secrets.UMAMI_USERNAME }}" \
           --extra-vars "umami_password=${{ secrets.UMAMI_PASSWORD }}" \
           --extra-vars "umami_website_id=${{ secrets.WEBSITE_ID }}"
+
+      
