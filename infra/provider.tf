@@ -13,3 +13,12 @@ provider "proxmox" {
   pm_api_token_secret = var.pm_api_token_secret
   pm_tls_insecure     = true
 }
+
+terraform {
+  required_providers {
+    local = {
+      source = "hashicorp/local"
+      version = "2.7.0"
+    }
+  }
+}
