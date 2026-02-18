@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Terminal, Coffee, Code, Server } from 'lucide-react';
-import { StatusBadge } from './ui/StatusBadge';
-import { TerminalHeader } from './ui/TerminalHeader';
+import { StatusBadge } from '../ui/StatusBadge';
+import { TerminalHeader } from '../ui/TerminalHeader';
 type TimelineItem = {
   id: string;
   title: string;
