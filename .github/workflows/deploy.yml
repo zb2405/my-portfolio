@@ -9,20 +9,41 @@ jobs:
     runs-on: self-hosted
 
     steps:
+      #################################################
+      # CHECKOUT
+      #################################################
+
       - name: Checkout repo
         uses: actions/checkout@v4
+
+      #################################################
+      # NODE SETUP
+      #################################################
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
+      #################################################
+      # BUILD VITE APP
+      #################################################
+
       - name: Install dependencies
+        working-directory: zaki-portfolio-v11
         run: npm ci
 
       - name: Build portfolio
+        working-directory: zaki-portfolio-v11
         run: npm run build
+
+      #################################################
+      # DEPLOY VIA ANSIBLE
+      #################################################
 
       - name: Deploy via Ansible
         run: |
-          ansible-playbook             -i ansible/inventory/generated.yml             ansible-deploy/deploy.yml             --extra-vars "vite_build_path=dist"
+          ansible-playbook \
+            -i ansible/inventory/generated.yml \
+            ansible-deploy/deploy.yml \
+            --extra-vars "vite_build_path=zaki-portfolio-v11/dist"
