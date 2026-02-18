@@ -155,7 +155,7 @@ export default function Hero() {
 
           {/* SECONDARY */}
           <a
-            href="/public/pdfs/resume.pdf"
+            href="/pdfs/resume.pdf"
             className="
               px-10 py-4
               rounded-xl
