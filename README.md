@@ -1,4 +1,4 @@
-# DevOps / SRE Self‑Hosted Portfolio Platform
+# Enterprise-Style DevOps Portfolio Website
 
 ## Overview
 
