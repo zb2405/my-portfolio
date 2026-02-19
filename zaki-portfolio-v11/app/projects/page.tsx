@@ -6,54 +6,19 @@ import { ProjectCard, Project } from '../../components/projects/ProjectCard';
 import { Terminal } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+
 const PROJECTS: Project[] = [
 {
   id: '1',
-  title: 'Linux Server QA Automation',
+  title: 'Enterprise-Style DevOps Portfolio Website',
   description:
-  'An automated Quality Assurance (QA) framework for validating newly built Linux servers using Ansible and Python. It performs structured validation of system configuration, services, storage, networking, DNS, and OS registration, then generates a formatted Excel QA report. The solution is designed for enterprise build validation workflows where consistency, auditability, and repeatable checks are required.',
-  category: 'Automation',
-  tech: ['Ansible','Python','Linux'],
-  links: { github: 'https://github.com/zb2405/Linux_QA#' }
+  'Production-grade self-hosted DevOps/SRE portfolio built with Terraform, Ansible, and GitHub Actions on Proxmox LXC infrastructure. Features Cloudflare Tunnel edge security, hardened Nginx, internal Umami analytics, and zero-downtime blue/green deployments.',
+  category: 'Infrastructure',
+  tech: ['DevOps','Terraform','Ansible','Proxmox','LXC','GitHub Actions','CI/CD','Cloudflare','Nginx','React','Vite','TypeScript','Umami Analytics','Infrastructure as Code'],
+  links: { github: 'https://github.com/zb2405/my-portfolio' }
 },
 {
   id: '2',
-  title: 'Automating IT infrastructure using Ansible and AWX',
-  description:
-  'Designed and implemented an Infrastructure-as-Code solution using Ansible roles and AWX to automate deployment of a load-balanced web environment. The project demonstrates role-based automation, centralized orchestration, and repeatable configuration management workflows for Apache, HAProxy, SELinux, and system patching.',
-  category: 'Automation',
-  tech: ['Ansible','Ansible Tower','Infrastructure as Code','DevOps','Automation','HAProxy','Apache','Linux Automation'],
-  links: { github: 'https://github.com/zb2405/project-nssa-320/tree/master' }
-},
-{
-  id: '3',
-  title: 'Packet Capture Analysis Tool',
-  description:
-  'implements a Packet Capture Analysis (PCA) tool written in Python. The tool analyzes ICMP packet capture data collected from multiple network nodes and computes performance and network metrics used for analysis.',
-  category: 'Monitoring',
-  tech: ['python','network-monitoring','linux-networking'],
-  links: { github: 'https://github.com/zb2405/Packet-Capture-Analysis-Tool' }
-},
-{
-  id: '4',
-  title: 'Webserver Deployment with HAProxy & Apache',
-  description:
-  'Infrastructure-as-Code project built with Ansible roles to automate deployment of a load-balanced web application environment. The automation provisions Apache web servers, configures HAProxy load balancing, enforces SELinux and firewall policies, and enables automated system updates using dnf-automatic. Designed to demonstrate idempotent configuration management and scalable infrastructure automation workflows.',
-  category: 'Infrastructure',
-  tech: ['Ansible','infrastructure-as-code','configuration-management','DevOps','linux-automation','apache','haproxy','selinux'],
-  links: { github: 'https://github.com/zb2405/NSSA-320-configuration-management/tree/main' }
-},
-{
-  id: '5',
-  title: 'Application performance monitoring tool',
-  description:
-  'This project implements a simple Application Performance Monitoring (APM) tool written in Bash. The script launches multiple application processes, monitors their performance, collects system metrics, and stores the results in CSV files for analysis. The goal of this project was to simulate real-world performance monitoring used by system administrators to detect resource bottlenecks, performance issues, and abnormal application behaviour.',
-  category: 'Monitoring',
-  tech: ['bash','linux','performance-monitoring'],
-  links: { github: 'https://github.com/zb2405/Application-Performance-Monitoring-APM-Tool' }
-},
-{
-  id: '6',
   title: 'HA Kubernetes Cluster Deployment using Ansible, Docker, Rancher',
   description:
   'This project demonstrates the deployment of a High Availability Kubernetes cluster using Ansible automation, Docker containers, Rancher, and RKE (Rancher Kubernetes Engine). The goal of this capstone project was to simplify Kubernetes cluster deployment, reduce manual configuration effort, and provide centralized cluster management using the Rancher dashboard.',
@@ -62,16 +27,7 @@ const PROJECTS: Project[] = [
   links: { github: 'https://github.com/zb2405/HA-Kubernetes-cluster-using-Ansible-Docker-and-Rancher' }
 },
 {
-  id: '7',
-  title: 'End-to-End Webserver Deployment on AWS',
-  description:
-  'Designed and deployed a cloud-hosted web application using AWS EC2, RDS, S3, IAM, and Route 53. The project demonstrates full-stack cloud architecture including DNS routing, database integration, object storage, and role-based access control. A Python-based web application was deployed on EC2, storing uploaded files in S3 while persisting structured data in a MySQL database on RDS, showcasing scalable and cost-efficient cloud infrastructure design.',
-  category: 'Cloud',
-  tech: ['aws','amazon-ec2','amazon-s3','amazon-rds','route53','cloud-computing','cloud-architecture','web-deployment','linux'],
-  links: { github: '/pdfs/e2e_aws.pdf' }
-},
-{
-  id: '8',
+  id: '3',
   title: 'CI/CD pipeline using Jenkins, Ansible, and Docker',
   description:
   'Designed and implemented a complete CI/CD pipeline integrating GitHub, Jenkins, Ansible, Docker, and Docker Hub to automate application build, testing, and deployment workflows. The pipeline automatically triggers Jenkins builds on source code commits, builds Docker images from a Dockerfile, pushes versioned images to Docker Hub, and deploys containers using Ansible playbooks across client nodes. The project demonstrates automated software delivery, container-based deployment, and infrastructure orchestration within a DevOps environment.',
@@ -80,15 +36,70 @@ const PROJECTS: Project[] = [
   links: { github: '/pdfs/cicd.pdf' }
 },
 {
-  id: '9',
+  id: '4',
+  title: 'End-to-End Webserver Deployment on AWS',
+  description:
+  'Designed and deployed a cloud-hosted web application using AWS EC2, RDS, S3, IAM, and Route 53. The project demonstrates full-stack cloud architecture including DNS routing, database integration, object storage, and role-based access control. A Python-based web application was deployed on EC2, storing uploaded files in S3 while persisting structured data in a MySQL database on RDS, showcasing scalable and cost-efficient cloud infrastructure design.',
+  category: 'Cloud',
+  tech: ['aws','amazon-ec2','amazon-s3','amazon-rds','route53','cloud-computing','cloud-architecture','web-deployment','linux'],
+  links: { github: '/pdfs/e2e_aws.pdf' }
+},
+{
+  id: '5',
   title: 'Proxmox LXC GitHub Actions Runner',
   description:
   'Automation script that provisions a self-hosted GitHub Actions runner inside a Proxmox LXC container using Ubuntu and Docker. The project demonstrates CI/CD infrastructure automation, containerized runners, and lightweight virtualization for test or staging environments, with automated runner registration and systemd service management.',
   category: 'Automation',
   tech: ['github-actions','proxmox','lxc','docker','cicd','automation','linux','bash','DevOps'],
   links: { github: 'https://github.com/zb2405/github-selfhosted-runner' }
+},
+{
+  id: '6',
+  title: 'Linux Server QA Automation',
+  description:
+  'An automated Quality Assurance (QA) framework for validating newly built Linux servers using Ansible and Python. It performs structured validation of system configuration, services, storage, networking, DNS, and OS registration, then generates a formatted Excel QA report. The solution is designed for enterprise build validation workflows where consistency, auditability, and repeatable checks are required.',
+  category: 'Automation',
+  tech: ['Ansible','Python','Linux'],
+  links: { github: 'https://github.com/zb2405/Linux_QA#' }
+},
+{
+  id: '7',
+  title: 'Webserver Deployment with HAProxy & Apache',
+  description:
+  'Infrastructure-as-Code project built with Ansible roles to automate deployment of a load-balanced web application environment. The automation provisions Apache web servers, configures HAProxy load balancing, enforces SELinux and firewall policies, and enables automated system updates using dnf-automatic. Designed to demonstrate idempotent configuration management and scalable infrastructure automation workflows.',
+  category: 'Infrastructure',
+  tech: ['Ansible','infrastructure-as-code','configuration-management','DevOps','linux-automation','apache','haproxy','selinux'],
+  links: { github: 'https://github.com/zb2405/NSSA-320-configuration-management/tree/main' }
+},
+{
+  id: '8',
+  title: 'Automating IT infrastructure using Ansible and AWX',
+  description:
+  'Designed and implemented an Infrastructure-as-Code solution using Ansible roles and AWX to automate deployment of a load-balanced web environment. The project demonstrates role-based automation, centralized orchestration, and repeatable configuration management workflows for Apache, HAProxy, SELinux, and system patching.',
+  category: 'Automation',
+  tech: ['Ansible','Ansible Tower','Infrastructure as Code','DevOps','Automation','HAProxy','Apache','Linux Automation'],
+  links: { github: 'https://github.com/zb2405/project-nssa-320/tree/master' }
+},
+{
+  id: '9',
+  title: 'Packet Capture Analysis Tool',
+  description:
+  'implements a Packet Capture Analysis (PCA) tool written in Python. The tool analyzes ICMP packet capture data collected from multiple network nodes and computes performance and network metrics used for analysis.',
+  category: 'Monitoring',
+  tech: ['python','network-monitoring','linux-networking'],
+  links: { github: 'https://github.com/zb2405/Packet-Capture-Analysis-Tool' }
+},
+{
+  id: '10',
+  title: 'Application performance monitoring tool',
+  description:
+  'This project implements a simple Application Performance Monitoring (APM) tool written in Bash. The script launches multiple application processes, monitors their performance, collects system metrics, and stores the results in CSV files for analysis. The goal of this project was to simulate real-world performance monitoring used by system administrators to detect resource bottlenecks, performance issues, and abnormal application behaviour.',
+  category: 'Monitoring',
+  tech: ['bash','linux','performance-monitoring'],
+  links: { github: 'https://github.com/zb2405/Application-Performance-Monitoring-APM-Tool' }
 }
 ];
+
 
 const CATEGORIES = [
 'All',
