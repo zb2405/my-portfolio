@@ -14,27 +14,16 @@ jobs:
         working-directory: infra
 
     steps:
-      #################################################
-      # CHECKOUT
-      #################################################
+
       - name: Checkout Repository
         uses: actions/checkout@v6.0.2
 
-      #################################################
-      # SETUP TERRAFORM
-      #################################################
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3.1.2
 
-      #################################################
-      # TERRAFORM INIT
-      #################################################
       - name: Terraform Init
         run: terraform init
 
-      #################################################
-      # TERRAFORM PLAN
-      #################################################
       - name: Terraform Plan
         id: plan
         env:
@@ -62,9 +51,7 @@ jobs:
           fi
       # - name: Show Plan Output (debug)
       #   run: cat plan_output.txt
-      #################################################
-      # TERRAFORM APPLY ONLY IF INFRASTRUCTURE CHANGES ARE PRESENT
-      #################################################
+
       - name: Terraform Apply
         if: steps.plan.outputs.exitcode == '2'
         env:
@@ -75,9 +62,6 @@ jobs:
           TF_VAR_ssh_public_key: ${{ secrets.ANSIBLE_SSH_PUBLIC_KEY }}
         run: terraform apply -auto-approve tfplan
 
-      #################################################
-      # OUTPUT THE INVENTORY FILE
-      #################################################
       - name: Generate inventory file if no infra changes
         if: steps.plan.outputs.exitcode == '0'
         run: |

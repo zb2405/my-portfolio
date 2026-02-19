@@ -1,7 +1,3 @@
-#################################################
-# AUTO GENERATED ANSIBLE INVENTORY
-#################################################
-
 output "ansible_inventory_yaml" {
 
   value = yamlencode({

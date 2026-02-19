@@ -4,14 +4,14 @@
   roles:
     - web
 
-# - name: Configure cloudflared
-#   hosts: cloudflared
-#   become: yes
-#   roles:
-#     - cloudflared
+- name: Configure cloudflared
+  hosts: cloudflared
+  become: yes
+  roles:
+    - cloudflared
 
-# - name: Configure umami
-#   hosts: umami
-#   become: yes
-#   roles:
-#     - umami
+- name: Configure umami
+  hosts: umami
+  become: yes
+  roles:
+    - umami

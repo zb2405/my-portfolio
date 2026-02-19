@@ -1,8 +1,4 @@
 ---
-#################################################
-# INSTALL CLOUDFLARED PACKAGE
-#################################################
-
 - name: Download cloudflared package
   get_url:
     url: https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
@@ -26,10 +22,6 @@
   args:
     creates: /etc/systemd/system/cloudflared.service
 
-#################################################
-# ENABLE + START SERVICE
-#################################################
-
 - name: Reload systemd daemon
   command: systemctl daemon-reexec
 
@@ -40,7 +32,7 @@
     state: started
 
 #################################################
-# VERIFY TUNNEL IS ACTIVE (TOKEN MODE SAFE)
+# VERIFY TUNNEL IS ACTIVE
 #################################################
 
 - name: Check cloudflared service state
@@ -52,10 +44,6 @@
   fail:
     msg: "Cloudflared tunnel is NOT active"
   when: cloudflared_status.stdout != "active"
-
-#################################################
-# OPTIONAL: SHOW VERSION (DEBUG FRIENDLY)
-#################################################
 
 - name: Show cloudflared version
   command: cloudflared --version

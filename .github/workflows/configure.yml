@@ -30,8 +30,8 @@ jobs:
       - name: Save Terraform run id
         run: echo "${{ github.event.workflow_run.id }}" > terraform_run_id.txt
 
-      - name: Show Terraform Run ID (debug)
-        run: cat terraform_run_id.txt      
+      # - name: Show Terraform Run ID (debug)
+      #   run: cat terraform_run_id.txt      
         
       - name: Upload terraform run id
         uses: actions/upload-artifact@v6.0.0

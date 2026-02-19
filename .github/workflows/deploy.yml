@@ -18,26 +18,14 @@ jobs:
     runs-on: self-hosted
 
     steps:
-
-      #################################################
-      # CHECKOUT
-      #################################################
       
       - name: Checkout repo
         uses: actions/checkout@v6.0.2
-
-      #################################################
-      # NODE SETUP
-      #################################################
 
       - name: Setup Node
         uses: actions/setup-node@v6.2.0
         with:
           node-version: 20
-
-      #################################################
-      # BUILD VITE APP
-      #################################################
 
       - name: Install dependencies
         working-directory: zaki-portfolio-v11
@@ -47,9 +35,6 @@ jobs:
         working-directory: zaki-portfolio-v11
         run: npm run build
 
-      #################################################
-      # DOWNLOAD INVENTORY
-      #################################################
       - name: Download terraform run id
         uses: actions/download-artifact@v7.0.0
         with:
@@ -69,10 +54,6 @@ jobs:
           repository: ${{ github.repository }}
           run-id: ${{ env.TF_RUN_ID }}
           path: ansible/inventory
-
-      #################################################
-      # DEPLOY VIA ANSIBLE
-      #################################################
 
       - name: Deploy via Ansible
         run: |

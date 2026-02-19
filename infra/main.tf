@@ -128,7 +128,7 @@ resource "proxmox_lxc" "umami" {
 }
 
 #################################################
-# ANSIBLE READINESS CHECKS (STATIC IPS)
+# ANSIBLE READINESS CHECKS USING STATIC IPS
 #################################################
 resource "null_resource" "wait_for_nginx" {
   depends_on = [proxmox_lxc.nginx]

@@ -1,8 +1,4 @@
 ---
-#################################################
-# SYSTEM DEPENDENCIES
-#################################################
-
 - name: Install base packages
   apt:
     name:
@@ -18,10 +14,6 @@
       - python3-psycopg2
     state: present
     update_cache: yes
-
-#################################################
-# VERIFY NODE + NPM
-#################################################
 
 - name: Verify node
   command: node -v
@@ -39,10 +31,6 @@
 - debug:
     var: npm_ver.stdout
 
-#################################################
-# INSTALL PNPM
-#################################################
-
 - name: Install pnpm globally
   command: npm install -g pnpm
   args:
@@ -56,19 +44,11 @@
 - debug:
     var: pnpm_ver.stdout
 
-#################################################
-# POSTGRES INITIAL START
-#################################################
-
 - name: Ensure postgres running
   service:
     name: postgresql
     state: started
     enabled: yes
-
-#################################################
-# DETECT POSTGRES VERSION
-#################################################
 
 - name: Detect postgres version
   shell: ls /var/lib/postgresql
@@ -100,10 +80,6 @@
   args:
     creates: "/var/lib/umami/postgres/main"
 
-#################################################
-# FIX PERMISSIONS
-#################################################
-
 - name: Fix postgres ownership
   file:
     path: /var/lib/umami/postgres
@@ -111,19 +87,11 @@
     group: postgres
     recurse: yes
 
-#################################################
-# UPDATE POSTGRES DATA DIRECTORY
-#################################################
-
 - name: Update postgres data_directory
   lineinfile:
     path: "/etc/postgresql/{{ pg_ver }}/main/postgresql.conf"
     regexp: "^data_directory"
     line: "data_directory = '/var/lib/umami/postgres/main'"
-
-#################################################
-# START POSTGRES AFTER MIGRATION
-#################################################
 
 - name: Start postgres
   service:
@@ -131,18 +99,10 @@
     state: started
     enabled: yes
 
-#################################################
-# WAIT FOR POSTGRES SOCKET
-#################################################
-
 - name: Wait for postgres socket
   wait_for:
     path: /var/run/postgresql/.s.PGSQL.5432
     timeout: 60
-
-#################################################
-# DATABASE SETUP
-#################################################
 
 - name: Create umami database
   become_user: postgres
@@ -164,20 +124,12 @@
     type: database
     privs: ALL
 
-#################################################
-# INSTALL UMAMI
-#################################################
-
 - name: Clone Umami repository
   git:
     repo: https://github.com/umami-software/umami.git
     dest: /opt/umami
     version: master
     update: yes
-
-#################################################
-# ENV CONFIG
-#################################################
 
 - name: Create Umami env file
   copy:
@@ -187,10 +139,6 @@
       APP_SECRET={{ umami_app_secret }}
       HOSTNAME=127.0.0.1
       PORT=3000
-
-#################################################
-# INSTALL + BUILD USING PNPM
-#################################################
 
 - name: Install dependencies with pnpm
   command: pnpm install --no-frozen-lockfile
@@ -221,10 +169,6 @@
   command: pnpm build
   args:
     chdir: /opt/umami
-
-#################################################
-# SYSTEMD SERVICE
-#################################################
 
 - name: Create Umami systemd service
   copy:

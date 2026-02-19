@@ -111,17 +111,6 @@ security policies.
 -   Gzip compression
 -   Reverse proxy cache for analytics endpoints
 
-### Content Security Policy
-
-Example CSP enforcement:
-
-    Content-Security-Policy:
-      default-src 'self';
-      script-src 'self';
-      style-src 'self' 'unsafe-inline';
-      img-src 'self' data:;
-      connect-src 'self';
-
 ### Edge Security Model
 
 Cloudflare performs:

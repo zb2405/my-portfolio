@@ -1,8 +1,4 @@
 ---
-#################################################
-# DEPLOY WEBSITE (VITE STATIC BUILD)
-#################################################
-
 - name: Deploy Portfolio Website
   hosts: nginx-web
   become: true
