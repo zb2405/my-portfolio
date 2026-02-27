@@ -6,12 +6,12 @@ import { TimelineNode } from "./TimelineNode";
 
 const EXPERIENCE_DATA: ExperienceData[] = [
   {
-    role: "IT Operations",
+    role: "Infrastructure Engineer, IT Operations",
     company: "Tesla Motors",
     date: "2021 – 2025",
     logo: "/experience/tesla.svg",
     description:
-      "Stabilized retail IT operations across North America by resolving high-impact incidents and improving recovery workflows. Automated Linux operations using Bash and Python, built GitHub Actions CI pipelines, supported Docker workloads, and implemented Grafana monitoring and automated health checks. Reduced MTTR through improved alerting, runbooks, and root-cause analysis while collaborating with network, security, and application teams to deliver zero-downtime infrastructure changes.",
+      "Improved reliability across distributed Linux and network environments by automating operational workflows and strengthening observability. Containerized synthetic monitoring workloads, built Grafana dashboards for latency and availability tracking, and reduced alert fatigue through validation checks. Led root cause analysis on recurring infrastructure issues and implemented permanent configuration fixes to stabilize production systems.",
     skills: [
       "Linux",
       "Python",
@@ -21,7 +21,12 @@ const EXPERIENCE_DATA: ExperienceData[] = [
       "GitHub Actions",
       "Cisco vManage",
       "Zscaler",
-      "Aruba"
+      "Aruba",
+      "AWS",
+      "GitHub",
+      "Kubernetes",
+      "Ansible",
+      "Terraform",
     ],
   },
   {
